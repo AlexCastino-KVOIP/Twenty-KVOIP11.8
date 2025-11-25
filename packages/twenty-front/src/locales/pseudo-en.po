@@ -2216,6 +2216,11 @@ msgstr ""
 msgid "Context"
 msgstr ""
 
+#. js-lingui-id: pOEfNY
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Continuar"
+msgstr ""
+
 #. js-lingui-id: xGVfLh
 #: src/pages/onboarding/SyncEmails.tsx
 #: src/pages/onboarding/InviteTeam.tsx
@@ -3824,6 +3829,11 @@ msgstr ""
 #. js-lingui-id: QPJi2W
 #: src/modules/billing/components/SettingsBillingSubscriptionInfo.tsx
 msgid "Error while switching subscription."
+msgstr ""
+
+#. js-lingui-id: vHsqwC
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Escolha seu Plano"
 msgstr ""
 
 #. js-lingui-id: JLxMta
@@ -7567,6 +7577,11 @@ msgstr ""
 msgid "Russian"
 msgstr ""
 
+#. js-lingui-id: 8cDgMo
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Sair"
+msgstr ""
+
 #. js-lingui-id: +5kO8P
 #: src/pages/settings/profile/appearance/components/DateTimeSettingsCalendarStartDaySelect.tsx
 msgid "Saturday"
@@ -7890,6 +7905,11 @@ msgstr ""
 #. js-lingui-id: MVYiTN
 #: src/modules/action-menu/actions/record-actions/constants/DefaultRecordActionsConfig.tsx
 msgid "See Workflows"
+msgstr ""
+
+#. js-lingui-id: FKN/OO
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Selecione o plano ideal para sua equipe"
 msgstr ""
 
 #. js-lingui-id: bP/w4M

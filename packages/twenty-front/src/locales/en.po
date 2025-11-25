@@ -2216,6 +2216,11 @@ msgstr "Contains"
 msgid "Context"
 msgstr "Context"
 
+#. js-lingui-id: pOEfNY
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Continuar"
+msgstr "Continuar"
+
 #. js-lingui-id: xGVfLh
 #: src/pages/onboarding/SyncEmails.tsx
 #: src/pages/onboarding/InviteTeam.tsx
@@ -3825,6 +3830,11 @@ msgstr "Error while switching subscription to {oppositPlan} Plan."
 #: src/modules/billing/components/SettingsBillingSubscriptionInfo.tsx
 msgid "Error while switching subscription."
 msgstr "Error while switching subscription."
+
+#. js-lingui-id: vHsqwC
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Escolha seu Plano"
+msgstr "Escolha seu Plano"
 
 #. js-lingui-id: JLxMta
 #: src/pages/settings/workspace/SettingsApiWebhooks.tsx
@@ -7567,6 +7577,11 @@ msgstr "Run Function"
 msgid "Russian"
 msgstr "Russian"
 
+#. js-lingui-id: 8cDgMo
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Sair"
+msgstr "Sair"
+
 #. js-lingui-id: +5kO8P
 #: src/pages/settings/profile/appearance/components/DateTimeSettingsCalendarStartDaySelect.tsx
 msgid "Saturday"
@@ -7891,6 +7906,11 @@ msgstr "See workflow"
 #: src/modules/action-menu/actions/record-actions/constants/DefaultRecordActionsConfig.tsx
 msgid "See Workflows"
 msgstr "See Workflows"
+
+#. js-lingui-id: FKN/OO
+#: src/pages/onboarding/internal/ChooseCustomPlanContent.tsx
+msgid "Selecione o plano ideal para sua equipe"
+msgstr "Selecione o plano ideal para sua equipe"
 
 #. js-lingui-id: bP/w4M
 #: src/modules/workflow/workflow-steps/workflow-actions/filter-action/components/WorkflowStepFilterFieldSelect.tsx
