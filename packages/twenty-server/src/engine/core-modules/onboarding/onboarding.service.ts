@@ -5,6 +5,7 @@ import { isDefined } from 'twenty-shared/utils';
 import { WorkspaceActivationStatus } from 'twenty-shared/workspace';
 import { type QueryRunner } from 'typeorm';
 
+import { BillingMode } from 'src/engine/core-modules/billing/enums/billing-mode.enum';
 import { BillingService } from 'src/engine/core-modules/billing/services/billing.service';
 import { OnboardingStatus } from 'src/engine/core-modules/onboarding/enums/onboarding-status.enum';
 import { TwentyConfigService } from 'src/engine/core-modules/twenty-config/twenty-config.service';
@@ -41,12 +42,25 @@ export class OnboardingService {
   }
 
   async getOnboardingStatus(user: UserEntity, workspace: WorkspaceEntity) {
-    if (
-      await this.billingService.isSubscriptionIncompleteOnboardingStatus(
-        workspace.id,
-      )
-    ) {
-      return OnboardingStatus.PLAN_REQUIRED;
+    const billingMode = this.twentyConfigService.get('BILLING_MODE');
+    const isBillingEnabled = this.twentyConfigService.get('IS_BILLING_ENABLED');
+
+    if (isBillingEnabled) {
+      if (billingMode === BillingMode.LOCAL) {
+        // For LOCAL mode, check if workspace has a customBillingPlanId
+        if (!workspace.customBillingPlanId) {
+          return OnboardingStatus.CUSTOM_PLAN_REQUIRED;
+        }
+      } else {
+        // For STRIPE mode, use the original behavior
+        if (
+          await this.billingService.isSubscriptionIncompleteOnboardingStatus(
+            workspace.id,
+          )
+        ) {
+          return OnboardingStatus.PLAN_REQUIRED;
+        }
+      }
     }
 
     if (this.isWorkspaceActivationPending(workspace)) {

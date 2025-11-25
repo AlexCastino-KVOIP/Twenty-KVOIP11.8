@@ -15,6 +15,7 @@ import { AwsRegion } from 'src/engine/core-modules/twenty-config/interfaces/aws-
 import { NodeEnvironment } from 'src/engine/core-modules/twenty-config/interfaces/node-environment.interface';
 import { SupportDriver } from 'src/engine/core-modules/twenty-config/interfaces/support.interface';
 
+import { BillingMode } from 'src/engine/core-modules/billing/enums/billing-mode.enum';
 import { CaptchaDriverType } from 'src/engine/core-modules/captcha/interfaces';
 import { EmailDriver } from 'src/engine/core-modules/email/enums/email-driver.enum';
 import { ExceptionHandlerDriver } from 'src/engine/core-modules/exception-handler/interfaces';
@@ -565,10 +566,24 @@ export class ConfigVariables {
 
   @ConfigVariablesMetadata({
     group: ConfigVariablesGroup.BILLING_CONFIG,
+    description:
+      'Billing mode: STRIPE uses real Stripe API, LOCAL uses custom plans',
+    type: ConfigVariableType.ENUM,
+    options: Object.values(BillingMode),
+  })
+  @IsOptional()
+  @CastToUpperSnakeCase()
+  BILLING_MODE: BillingMode = BillingMode.STRIPE;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.BILLING_CONFIG,
     description: 'Link required for billing plan',
     type: ConfigVariableType.STRING,
   })
-  @ValidateIf((env) => env.IS_BILLING_ENABLED === true)
+  @ValidateIf(
+    (env) =>
+      env.IS_BILLING_ENABLED === true && env.BILLING_MODE === BillingMode.STRIPE,
+  )
   BILLING_PLAN_REQUIRED_LINK: string;
 
   @ConfigVariablesMetadata({
@@ -615,7 +630,10 @@ export class ConfigVariables {
     description: 'Stripe API key for billing',
     type: ConfigVariableType.STRING,
   })
-  @ValidateIf((env) => env.IS_BILLING_ENABLED === true)
+  @ValidateIf(
+    (env) =>
+      env.IS_BILLING_ENABLED === true && env.BILLING_MODE === BillingMode.STRIPE,
+  )
   BILLING_STRIPE_API_KEY: string;
 
   @ConfigVariablesMetadata({
@@ -624,7 +642,10 @@ export class ConfigVariables {
     description: 'Stripe webhook secret for billing',
     type: ConfigVariableType.STRING,
   })
-  @ValidateIf((env) => env.IS_BILLING_ENABLED === true)
+  @ValidateIf(
+    (env) =>
+      env.IS_BILLING_ENABLED === true && env.BILLING_MODE === BillingMode.STRIPE,
+  )
   BILLING_STRIPE_WEBHOOK_SECRET: string;
 
   @ConfigVariablesMetadata({

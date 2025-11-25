@@ -347,6 +347,7 @@ export enum BarChartGroupMode {
 
 export type Billing = {
   __typename?: 'Billing';
+  billingMode?: Maybe<Scalars['String']>;
   billingUrl?: Maybe<Scalars['String']>;
   isBillingEnabled: Scalars['Boolean'];
   trialPeriods: Array<BillingTrialPeriod>;
@@ -1823,6 +1824,7 @@ export type Mutation = {
   revokeApiKey?: Maybe<ApiKey>;
   runWorkflowVersion: RunWorkflowVersionOutput;
   saveImapSmtpCaldavAccount: ImapSmtpCaldavConnectionSuccess;
+  selectCustomBillingPlan: Scalars['Boolean'];
   sendInvitations: SendInvitationsOutput;
   setMeteredSubscriptionPrice: BillingUpdateOutput;
   signIn: AvailableWorkspacesAndAccessTokensOutput;
@@ -2449,6 +2451,11 @@ export type MutationSaveImapSmtpCaldavAccountArgs = {
 };
 
 
+export type MutationSelectCustomBillingPlanArgs = {
+  planId: Scalars['String'];
+};
+
+
 export type MutationSendInvitationsArgs = {
   emails: Array<Scalars['String']>;
 };
@@ -2930,6 +2937,7 @@ export type OnDbEventInput = {
 export enum OnboardingStatus {
   BOOK_ONBOARDING = 'BOOK_ONBOARDING',
   COMPLETED = 'COMPLETED',
+  CUSTOM_PLAN_REQUIRED = 'CUSTOM_PLAN_REQUIRED',
   INVITE_TEAM = 'INVITE_TEAM',
   PLAN_REQUIRED = 'PLAN_REQUIRED',
   PROFILE_CREATION = 'PROFILE_CREATION',
@@ -4599,6 +4607,7 @@ export type Workspace = {
   billingSubscriptions: Array<BillingSubscription>;
   createdAt: Scalars['DateTime'];
   currentBillingSubscription?: Maybe<BillingSubscription>;
+  customBillingPlanId?: Maybe<Scalars['String']>;
   customDomain?: Maybe<Scalars['String']>;
   databaseSchema: Scalars['String'];
   databaseUrl: Scalars['String'];

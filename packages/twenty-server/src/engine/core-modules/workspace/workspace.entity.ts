@@ -311,4 +311,9 @@ export class WorkspaceEntity {
     onDelete: 'CASCADE',
   })
   applications: Relation<Application[]>;
+
+  // Custom billing plan for LOCAL billing mode
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  customBillingPlanId: string | null;
 }

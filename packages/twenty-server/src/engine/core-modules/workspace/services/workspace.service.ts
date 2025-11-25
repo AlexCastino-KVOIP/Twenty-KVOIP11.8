@@ -379,6 +379,33 @@ export class WorkspaceService extends TypeOrmQueryService<WorkspaceEntity> {
     }
   }
 
+  async setCustomBillingPlan(
+    workspaceId: string,
+    planId: string,
+  ): Promise<WorkspaceEntity> {
+    const workspace = await this.workspaceRepository.findOneBy({
+      id: workspaceId,
+    });
+
+    assertIsDefinedOrThrow(workspace, WorkspaceNotFoundDefaultError);
+
+    // TODO: Validar se o plano customizado existe no banco
+    // Por enquanto, apenas salva o ID
+    // Quando a estrutura de CustomBillingPlanEntity estiver pronta, adicionar validação aqui
+
+    await this.workspaceRepository.update(workspaceId, {
+      customBillingPlanId: planId,
+    });
+
+    const updatedWorkspace = await this.workspaceRepository.findOneBy({
+      id: workspaceId,
+    });
+
+    assertIsDefinedOrThrow(updatedWorkspace, WorkspaceNotFoundDefaultError);
+
+    return updatedWorkspace;
+  }
+
   private async validateWorkspaceUpdatePermissions({
     payload,
     userWorkspaceId,

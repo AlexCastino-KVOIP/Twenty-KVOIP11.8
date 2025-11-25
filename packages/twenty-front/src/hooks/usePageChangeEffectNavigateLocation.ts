@@ -40,6 +40,7 @@ export const usePageChangeEffectNavigateLocation = () => {
     AppPath.InviteTeam,
     AppPath.PlanRequired,
     AppPath.PlanRequiredSuccess,
+    AppPath.CustomPlanRequired,
     AppPath.BookCallDecision,
     AppPath.BookCall,
   ];
@@ -56,12 +57,26 @@ export const usePageChangeEffectNavigateLocation = () => {
     !someMatchingLocationOf([
       ...onGoingUserCreationPaths,
       AppPath.ResetPassword,
+      AppPath.CustomPlanRequired,
     ])
   ) {
     return AppPath.SignInUp;
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
+    onboardingStatus === OnboardingStatus.CUSTOM_PLAN_REQUIRED &&
+    !isMatchingLocation(location, AppPath.CustomPlanRequired)
+  ) {
+    return AppPath.CustomPlanRequired;
+  }
+
+  if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.PLAN_REQUIRED &&
     !someMatchingLocationOf([
       AppPath.PlanRequired,
@@ -90,6 +105,9 @@ export const usePageChangeEffectNavigateLocation = () => {
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.WORKSPACE_ACTIVATION &&
     !someMatchingLocationOf([
       AppPath.CreateWorkspace,
@@ -101,6 +119,9 @@ export const usePageChangeEffectNavigateLocation = () => {
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.PROFILE_CREATION &&
     !isMatchingLocation(location, AppPath.CreateProfile)
   ) {
@@ -108,6 +129,9 @@ export const usePageChangeEffectNavigateLocation = () => {
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.SYNC_EMAIL &&
     !isMatchingLocation(location, AppPath.SyncEmails)
   ) {
@@ -115,6 +139,9 @@ export const usePageChangeEffectNavigateLocation = () => {
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.INVITE_TEAM &&
     !isMatchingLocation(location, AppPath.InviteTeam)
   ) {
@@ -122,6 +149,9 @@ export const usePageChangeEffectNavigateLocation = () => {
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.BOOK_ONBOARDING &&
     !someMatchingLocationOf([AppPath.BookCallDecision, AppPath.BookCall])
   ) {
@@ -132,10 +162,12 @@ export const usePageChangeEffectNavigateLocation = () => {
   }
 
   if (
+    isLoggedIn &&
+    isOnAWorkspace &&
+    isDefined(onboardingStatus) &&
     onboardingStatus === OnboardingStatus.COMPLETED &&
     someMatchingLocationOf([...onboardingPaths, ...onGoingUserCreationPaths]) &&
-    !isMatchingLocation(location, AppPath.ResetPassword) &&
-    isLoggedIn
+    !isMatchingLocation(location, AppPath.ResetPassword)
   ) {
     return defaultHomePagePath;
   }

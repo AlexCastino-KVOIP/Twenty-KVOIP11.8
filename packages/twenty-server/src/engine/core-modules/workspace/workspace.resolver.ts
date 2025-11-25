@@ -454,4 +454,21 @@ export class WorkspaceResolver {
       domainValidRecords,
     );
   }
+
+  @Mutation(() => Boolean)
+  @UseGuards(WorkspaceAuthGuard, NoPermissionGuard)
+  async selectCustomBillingPlan(
+    @AuthWorkspace() workspace: WorkspaceEntity,
+    @Args('planId') planId: string,
+  ): Promise<boolean> {
+    try {
+      await this.workspaceService.setCustomBillingPlan(workspace.id, planId);
+
+      return true;
+    } catch (error) {
+      workspaceGraphqlApiExceptionHandler(error);
+
+      return false;
+    }
+  }
 }

@@ -107,6 +107,7 @@ export class ClientConfigService {
       billing: {
         isBillingEnabled: this.twentyConfigService.get('IS_BILLING_ENABLED'),
         billingUrl: this.twentyConfigService.get('BILLING_PLAN_REQUIRED_LINK'),
+        billingMode: this.twentyConfigService.get('BILLING_MODE'),
         trialPeriods: [
           {
             duration: this.twentyConfigService.get(

@@ -21,6 +21,7 @@ import { RecordIndexPage } from '~/pages/object-record/RecordIndexPage';
 import { RecordShowPage } from '~/pages/object-record/RecordShowPage';
 import { BookCall } from '~/pages/onboarding/BookCall';
 import { BookCallDecision } from '~/pages/onboarding/BookCallDecision';
+import { ChooseCustomPlan } from '~/pages/onboarding/ChooseCustomPlan';
 import { ChooseYourPlan } from '~/pages/onboarding/ChooseYourPlan';
 import { CreateProfile } from '~/pages/onboarding/CreateProfile';
 import { CreateWorkspace } from '~/pages/onboarding/CreateWorkspace';
@@ -54,6 +55,10 @@ export const useCreateAppRouter = (
           <Route
             path={AppPath.PlanRequiredSuccess}
             element={<PaymentSuccess />}
+          />
+          <Route
+            path={AppPath.CustomPlanRequired}
+            element={<ChooseCustomPlan />}
           />
           <Route
             path={AppPath.BookCallDecision}
