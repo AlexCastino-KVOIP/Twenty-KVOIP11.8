@@ -7,6 +7,7 @@ import { AiBillingModule } from 'src/engine/metadata-modules/ai-billing/ai-billi
 import { AiModelsModule } from 'src/engine/metadata-modules/ai-models/ai-models.module';
 import { AiToolsModule } from 'src/engine/metadata-modules/ai-tools/ai-tools.module';
 import { BillingResolver } from 'src/engine/core-modules/billing/billing.resolver';
+import { CustomBillingPlanResolver } from 'src/engine/core-modules/billing/resolvers/custom-billing-plan.resolver';
 import { BillingSyncCustomerDataCommand } from 'src/engine/core-modules/billing/commands/billing-sync-customer-data.command';
 import { BillingSyncPlansDataCommand } from 'src/engine/core-modules/billing/commands/billing-sync-plans-data.command';
 import { BillingUpdateSubscriptionPriceCommand } from 'src/engine/core-modules/billing/commands/billing-update-subscription-price.command';
@@ -17,6 +18,8 @@ import { BillingPriceEntity } from 'src/engine/core-modules/billing/entities/bil
 import { BillingProductEntity } from 'src/engine/core-modules/billing/entities/billing-product.entity';
 import { BillingSubscriptionItemEntity } from 'src/engine/core-modules/billing/entities/billing-subscription-item.entity';
 import { BillingSubscriptionEntity } from 'src/engine/core-modules/billing/entities/billing-subscription.entity';
+import { CustomBillingPlanEntity } from 'src/engine/core-modules/billing/entities/custom-billing-plan.entity';
+import { CustomBillingPlanPriceTierEntity } from 'src/engine/core-modules/billing/entities/custom-billing-plan-price-tier.entity';
 import { BillingRestApiExceptionFilter } from 'src/engine/core-modules/billing/filters/billing-api-exception.filter';
 import { BillingFeatureUsedListener } from 'src/engine/core-modules/billing/listeners/billing-feature-used.listener';
 import { BillingWorkspaceMemberListener } from 'src/engine/core-modules/billing/listeners/billing-workspace-member.listener';
@@ -29,6 +32,7 @@ import { BillingSubscriptionPhaseService } from 'src/engine/core-modules/billing
 import { BillingSubscriptionService } from 'src/engine/core-modules/billing/services/billing-subscription.service';
 import { BillingUsageService } from 'src/engine/core-modules/billing/services/billing-usage.service';
 import { BillingService } from 'src/engine/core-modules/billing/services/billing.service';
+import { CustomBillingPlanService } from 'src/engine/core-modules/billing/services/custom-billing-plan.service';
 import { StripeModule } from 'src/engine/core-modules/billing/stripe/stripe.module';
 import { WorkspaceDomainsModule } from 'src/engine/core-modules/domain/workspace-domains/workspace-domains.module';
 import { FeatureFlagEntity } from 'src/engine/core-modules/feature-flag/feature-flag.entity';
@@ -56,6 +60,8 @@ import { PermissionsModule } from 'src/engine/metadata-modules/permissions/permi
       BillingPriceEntity,
       BillingMeterEntity,
       BillingEntitlementEntity,
+      CustomBillingPlanEntity,
+      CustomBillingPlanPriceTierEntity,
       WorkspaceEntity,
       UserWorkspaceEntity,
       FeatureFlagEntity,
@@ -78,6 +84,8 @@ import { PermissionsModule } from 'src/engine/metadata-modules/permissions/permi
     BillingSyncPlansDataCommand,
     BillingUsageService,
     BillingPriceService,
+    CustomBillingPlanService,
+    CustomBillingPlanResolver,
   ],
   exports: [
     BillingSubscriptionService,

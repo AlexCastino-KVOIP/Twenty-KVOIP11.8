@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { SubTitle } from '@/auth/components/SubTitle';
 import { Title } from '@/auth/components/Title';
 import { useAuth } from '@/auth/hooks/useAuth';
@@ -14,6 +14,7 @@ import { Loader } from 'twenty-ui/feedback';
 import { MainButton } from 'twenty-ui/input';
 import { ClickToActionLink } from 'twenty-ui/navigation';
 import { useGetCurrentUserLazyQuery } from '~/generated-metadata/graphql';
+import { GET_ACTIVE_CUSTOM_BILLING_PLANS } from './graphql/queries/getActiveCustomBillingPlans';
 
 const SELECT_CUSTOM_BILLING_PLAN = gql`
   mutation SelectCustomBillingPlan($planId: String!) {
@@ -76,28 +77,22 @@ const StyledLinkGroup = styled.div`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
-// TODO: These should come from a GraphQL query to fetch custom billing plans
-// Por enquanto usando UUIDs mock válidos - substituir por query real quando a estrutura estiver pronta
-const MOCK_CUSTOM_PLANS = [
-  {
-    id: '00000000-0000-0000-0000-000000000001',
-    name: 'Plano Básico',
-    description: 'Ideal para pequenas equipes',
-    price: 'R$ 49/mês',
-  },
-  {
-    id: '00000000-0000-0000-0000-000000000002',
-    name: 'Plano Profissional',
-    description: 'Para equipes em crescimento',
-    price: 'R$ 99/mês',
-  },
-  {
-    id: '00000000-0000-0000-0000-000000000003',
-    name: 'Plano Enterprise',
-    description: 'Recursos completos para grandes empresas',
-    price: 'R$ 199/mês',
-  },
-];
+const formatPrice = (
+  tiers: Array<{ upTo: number | null; unitAmount: number }>,
+  currency: string,
+  interval: string,
+) => {
+  if (tiers.length === 0) return '-';
+  if (tiers.length === 1) {
+    const amount = tiers[0].unitAmount;
+    const intervalText = interval === 'month' ? 'mês' : 'ano';
+    return `${currency} ${amount.toFixed(2)}/${intervalText}`;
+  }
+  // Se tiver múltiplos tiers, mostra o primeiro
+  const firstTier = tiers[0];
+  const intervalText = interval === 'month' ? 'mês' : 'ano';
+  return `${currency} ${firstTier.unitAmount.toFixed(2)}/${intervalText} (tiers)`;
+};
 
 export const ChooseCustomPlanContent = () => {
   const { t } = useLingui();
@@ -106,11 +101,17 @@ export const ChooseCustomPlanContent = () => {
   const [getCurrentUser] = useGetCurrentUserLazyQuery();
   const setCurrentUser = useSetRecoilState(currentUserState);
 
+  const { data, loading: plansLoading } = useQuery(GET_ACTIVE_CUSTOM_BILLING_PLANS, {
+    fetchPolicy: 'network-only',
+  });
+
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [selectCustomBillingPlan, { loading }] = useMutation(
     SELECT_CUSTOM_BILLING_PLAN,
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const plans = data?.activeCustomBillingPlans || [];
 
   const handlePlanSelect = (planId: string) => {
     setSelectedPlanId(planId);
@@ -146,7 +147,7 @@ export const ChooseCustomPlanContent = () => {
     } catch (error: any) {
       console.error('Error selecting plan:', error);
       setIsRefreshing(false);
-      
+
       // Verifica se o erro é relacionado a UUID inválido
       if (
         error?.message?.includes('invalid input syntax for type uuid') ||
@@ -166,28 +167,46 @@ export const ChooseCustomPlanContent = () => {
       <Title noMarginTop>{t`Escolha seu Plano`}</Title>
       <SubTitle>{t`Selecione o plano ideal para sua equipe`}</SubTitle>
 
-      <StyledPlansContainer>
-        {MOCK_CUSTOM_PLANS.map((plan) => (
-          <StyledPlanCard
-            key={plan.id}
-            isSelected={selectedPlanId === plan.id}
-            onClick={() => handlePlanSelect(plan.id)}
-          >
-            <StyledPlanName>{plan.name}</StyledPlanName>
-            <StyledPlanDescription>{plan.description}</StyledPlanDescription>
-            <StyledPlanDescription style={{ marginTop: '8px' }}>
-              {plan.price}
-            </StyledPlanDescription>
-          </StyledPlanCard>
-        ))}
-      </StyledPlansContainer>
+      {plansLoading ? (
+        <StyledPlansContainer>
+          <StyledPlanDescription>{t`Carregando planos...`}</StyledPlanDescription>
+        </StyledPlansContainer>
+      ) : plans.length === 0 ? (
+        <StyledPlansContainer>
+          <StyledPlanDescription>
+            {t`Nenhum plano disponível. Por favor, crie planos no Admin Panel primeiro.`}
+          </StyledPlanDescription>
+        </StyledPlansContainer>
+      ) : (
+        <StyledPlansContainer>
+          {plans.map((plan: any) => (
+            <StyledPlanCard
+              key={plan.id}
+              isSelected={selectedPlanId === plan.id}
+              onClick={() => handlePlanSelect(plan.id)}
+            >
+              <StyledPlanName>{plan.name}</StyledPlanName>
+              <StyledPlanDescription>
+                {plan.description || t`Sem descrição`}
+              </StyledPlanDescription>
+              <StyledPlanDescription style={{ marginTop: '8px' }}>
+                {formatPrice(
+                  plan.priceTiers || [],
+                  plan.currency || 'R$',
+                  plan.interval || 'month',
+                )}
+              </StyledPlanDescription>
+            </StyledPlanCard>
+          ))}
+        </StyledPlansContainer>
+      )}
 
       <MainButton
         title={t`Continuar`}
         onClick={handleContinue}
         width={200}
-        Icon={() => (loading || isRefreshing) && <Loader />}
-        disabled={!selectedPlanId || loading || isRefreshing}
+        Icon={() => (loading || isRefreshing || plansLoading) && <Loader />}
+        disabled={!selectedPlanId || loading || isRefreshing || plansLoading || plans.length === 0}
       />
 
       <StyledLinkGroup>

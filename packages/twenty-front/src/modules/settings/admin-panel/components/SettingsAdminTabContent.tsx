@@ -3,6 +3,7 @@ import { SettingsAdminConfigVariables } from '@/settings/admin-panel/config-vari
 import { SETTINGS_ADMIN_TABS } from '@/settings/admin-panel/constants/SettingsAdminTabs';
 import { SETTINGS_ADMIN_TABS_ID } from '@/settings/admin-panel/constants/SettingsAdminTabsId';
 import { SettingsAdminHealthStatus } from '@/settings/admin-panel/health-status/components/SettingsAdminHealthStatus';
+import { SettingsAdminCustomBillingPlans } from '@/settings/admin-panel/custom-billing-plans/components/SettingsAdminCustomBillingPlans';
 import { activeTabIdComponentState } from '@/ui/layout/tab-list/states/activeTabIdComponentState';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
 
@@ -19,7 +20,9 @@ export const SettingsAdminTabContent = () => {
       return <SettingsAdminConfigVariables />;
     case SETTINGS_ADMIN_TABS.HEALTH_STATUS:
       return <SettingsAdminHealthStatus />;
+    case SETTINGS_ADMIN_TABS.CUSTOM_BILLING_PLANS:
+      return <SettingsAdminCustomBillingPlans />;
     default:
-      return null;
+      return <SettingsAdminGeneral />;
   }
 };
