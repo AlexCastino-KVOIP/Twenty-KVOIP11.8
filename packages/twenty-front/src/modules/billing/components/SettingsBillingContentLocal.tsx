@@ -627,13 +627,9 @@ const formatPriceTiers = (
         ((tier.unitAmount - nextTierData.unitAmount) / tier.unitAmount) * 100,
       );
       // Calcular quantos usuários faltam para chegar ao próximo tier
-      // Se o tier atual vai até "to", precisamos de (to + 1) usuários para o próximo tier
-      if (to !== null && nextTierData.upTo !== null) {
-        usersNeeded = Math.max(0, nextTierData.upTo - currentUserCount);
-      } else if (to !== null) {
-        // Se o próximo tier é ilimitado, precisamos de (to + 1) usuários
-        usersNeeded = Math.max(0, to - currentUserCount + 1);
-      }
+      // O próximo tier começa em (to + 1), então precisamos calcular a diferença
+      const nextTierFrom = to !== null ? to + 1 : 1;
+      usersNeeded = Math.max(0, nextTierFrom - currentUserCount);
     }
 
     return {
@@ -918,8 +914,11 @@ export const SettingsBillingContentLocal = () => {
                           } para subir o Tier e conseguir um desconto de ${tierData.discountPercentage}% por usuário criado! Aproveite`
                         : `Suba para o próximo Tier e ganhe ${tierData.discountPercentage}% de desconto por usuário!`}
                     </StyledUpgradeMessageText>
+
                   </StyledUpgradeMessageContent>
+
                 </StyledUpgradeMessageCard>
+
               )}
               </>
               );
