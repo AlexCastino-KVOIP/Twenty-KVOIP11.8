@@ -238,8 +238,8 @@ const StyledTierCard = styled.div<{ isActive: boolean; percentage: number }>`
         linear-gradient(
           90deg,
           transparent 0%,
-          rgba(255, 255, 255, 0.25) 40%,
-          rgba(255, 255, 255, 0.2) 60%,
+          ${theme.background.transparent.strong} 40%,
+          ${theme.background.transparent.medium} 60%,
           transparent 100%
         );
       animation: waterWave 3s linear infinite;
@@ -551,8 +551,8 @@ const StyledTierPrice = styled.div`
 
 const StyledCurrentTierBadge = styled.div`
   display: inline-block;
-  background: ${({ theme }) => theme.color.blue10};
-  color: ${({ theme }) => theme.color.blue11};
+  background: ${({ theme }) => theme.tag.background.blue};
+  color: ${({ theme }) => theme.tag.text.blue};
   padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(2)};
   border-radius: ${({ theme }) => theme.border.radius.sm};
   font-size: ${({ theme }) => theme.font.size.xs};
