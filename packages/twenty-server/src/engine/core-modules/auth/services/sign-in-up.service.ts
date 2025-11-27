@@ -13,21 +13,22 @@ import { type AppTokenEntity } from 'src/engine/core-modules/app-token/app-token
 import { ApplicationService } from 'src/engine/core-modules/application/application.service';
 import { WorkspaceFlatApplicationMapCacheService } from 'src/engine/core-modules/application/services/workspace-flat-application-map-cache.service';
 import {
-  AuthException,
-  AuthExceptionCode,
+    AuthException,
+    AuthExceptionCode,
 } from 'src/engine/core-modules/auth/auth.exception';
 import {
-  PASSWORD_REGEX,
-  compareHash,
-  hashPassword,
+    PASSWORD_REGEX,
+    compareHash,
+    hashPassword,
 } from 'src/engine/core-modules/auth/auth.util';
 import {
-  type AuthProviderWithPasswordType,
-  type ExistingUserOrPartialUserWithPicture,
-  type PartialUserWithPicture,
-  type SignInUpBaseParams,
-  type SignInUpNewUserPayload,
+    type AuthProviderWithPasswordType,
+    type ExistingUserOrPartialUserWithPicture,
+    type PartialUserWithPicture,
+    type SignInUpBaseParams,
+    type SignInUpNewUserPayload,
 } from 'src/engine/core-modules/auth/types/signInUp.type';
+import { BillingMode } from 'src/engine/core-modules/billing/enums/billing-mode.enum';
 import { SubdomainManagerService } from 'src/engine/core-modules/domain/subdomain-manager/services/subdomain-manager.service';
 import { MetricsService } from 'src/engine/core-modules/metrics/metrics.service';
 import { MetricsKeys } from 'src/engine/core-modules/metrics/types/metrics-keys.type';
@@ -264,8 +265,18 @@ export class SignInUpService {
         newUserWithPicture: PartialUserWithPicture;
       };
 
+      // Verifica se BILLING_MODE é LOCAL e se é o primeiro usuário
+      const billingMode = this.twentyConfigService.get('BILLING_MODE');
+      const isBillingLocal = billingMode === BillingMode.LOCAL;
+      const userCount = await this.userRepository.count();
+      const isFirstUser = userCount === 0;
+
+      // Habilita admin panel para o primeiro usuário quando BILLING_MODE é LOCAL
+      const canAccessFullAdminPanel =
+        isBillingLocal && isFirstUser ? true : false;
+
       const user = await this.saveNewUser(userData.newUserWithPicture, {
-        canAccessFullAdminPanel: false,
+        canAccessFullAdminPanel,
         canImpersonate: false,
       });
 

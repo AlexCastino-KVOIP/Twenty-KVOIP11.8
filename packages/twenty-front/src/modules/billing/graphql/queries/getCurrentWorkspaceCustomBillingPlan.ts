@@ -1,14 +1,14 @@
 import { gql } from '@apollo/client';
 
-export const GET_ACTIVE_CUSTOM_BILLING_PLANS = gql`
-  query GetActiveCustomBillingPlans {
-    activeCustomBillingPlans {
+export const GET_CURRENT_WORKSPACE_CUSTOM_BILLING_PLAN = gql`
+  query GetCurrentWorkspaceCustomBillingPlan {
+    currentWorkspaceCustomBillingPlan {
       id
       name
       description
       currency
       interval
-      trialPeriodDays
+      active
       features
       priceTiers {
         id

@@ -20,6 +20,8 @@ module.exports = {
     './src/modules/subscription/graphql/**/*.{ts,tsx}',
 
     './src/modules/page-layout/graphql/**/*.{ts,tsx}',
+    './src/modules/billing/graphql/**/*.{ts,tsx}',
+    '!./src/modules/billing/graphql/queries/getCurrentWorkspaceCustomBillingPlan.ts',
 
     '!./src/**/*.test.{ts,tsx}',
     '!./src/**/*.stories.{ts,tsx}',

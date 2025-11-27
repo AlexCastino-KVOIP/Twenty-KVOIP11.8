@@ -1,9 +1,9 @@
 import { AdvancedSettingsWrapper } from '@/settings/components/AdvancedSettingsWrapper';
 import { SettingsNavigationDrawerItem } from '@/settings/components/SettingsNavigationDrawerItem';
 import {
-  type SettingsNavigationItem,
-  type SettingsNavigationSection,
-  useSettingsNavigationItems,
+    type SettingsNavigationItem,
+    type SettingsNavigationSection,
+    useSettingsNavigationItems,
 } from '@/settings/hooks/useSettingsNavigationItems';
 import { NavigationDrawerItemGroup } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerItemGroup';
 import { NavigationDrawerSection } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSection';
@@ -92,9 +92,10 @@ export const SettingsNavigationDrawerItems = () => {
                   </NavigationDrawerItemGroup>
                 );
               }
+              // Usar index como parte da key para evitar duplicatas quando há múltiplos itens com mesmo path
               return (
                 <SettingsNavigationDrawerItem
-                  key={item.path || `item-${index}`}
+                  key={`${item.path}-${index}`}
                   item={item}
                   subItemState={
                     item.indentationLevel

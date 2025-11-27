@@ -11,8 +11,10 @@ export const GET_CUSTOM_BILLING_PLANS = gql`
       interval
       trialPeriodDays
       paymentGateway
+      features
       createdAt
       updatedAt
+      workspaceCount
       priceTiers {
         id
         upTo

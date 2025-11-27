@@ -17,6 +17,7 @@ module.exports = {
     './src/modules/workspace-invitation/graphql/**/*.{ts,tsx}',
 
     './src/modules/billing/graphql/**/*.{ts,tsx}',
+    '!./src/modules/billing/graphql/queries/getCurrentWorkspaceCustomBillingPlan.ts',
     './src/modules/settings/**/graphql/**/*.{ts,tsx}',
 
     './src/modules/databases/graphql/**/*.{ts,tsx}',

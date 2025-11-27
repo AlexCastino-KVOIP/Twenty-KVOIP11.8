@@ -1,8 +1,8 @@
 import { createState } from 'twenty-ui/utilities';
 import {
-  type Application,
-  type Role,
-  type Workspace,
+    type Application,
+    type Role,
+    type Workspace,
 } from '~/generated/graphql';
 
 export type CurrentWorkspace = Pick<
@@ -35,6 +35,7 @@ export type CurrentWorkspace = Pick<
   | 'fastModel'
   | 'smartModel'
   | 'editableProfileFields'
+  | 'customBillingPlanId'
 > & {
   defaultRole?: Omit<Role, 'workspaceMembers' | 'agents' | 'apiKeys'> | null;
   workspaceCustomApplication: Pick<Application, 'id'> | null;

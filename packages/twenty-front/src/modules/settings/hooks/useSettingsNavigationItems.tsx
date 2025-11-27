@@ -2,33 +2,36 @@ import { SettingsPath } from 'twenty-shared/types';
 
 import { useAuth } from '@/auth/hooks/useAuth';
 import { currentUserState } from '@/auth/states/currentUserState';
+import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
 import { billingState } from '@/client-config/states/billingState';
 import { usePermissionFlagMap } from '@/settings/roles/hooks/usePermissionFlagMap';
 import { type NavigationDrawerItemIndentationLevel } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerItem';
 import { useIsFeatureEnabled } from '@/workspace/hooks/useIsFeatureEnabled';
 import { t } from '@lingui/core/macro';
+import { useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { isDefined } from 'twenty-shared/utils';
 import {
-  IconApi,
-  IconApps,
-  IconAt,
-  IconCalendarEvent,
-  IconColorSwatch,
-  type IconComponent,
-  IconCurrencyDollar,
-  IconDoorEnter,
-  IconHierarchy2,
-  IconKey,
-  IconLock,
-  IconMail,
-  IconRocket,
-  IconServer,
-  IconSettings,
-  IconSparkles,
-  IconPuzzle2,
-  IconUserCircle,
-  IconUsers,
-  IconWorld,
+    IconApi,
+    IconApps,
+    IconAt,
+    IconCalendarEvent,
+    IconColorSwatch,
+    type IconComponent,
+    IconCurrencyDollar,
+    IconDoorEnter,
+    IconHierarchy2,
+    IconKey,
+    IconLock,
+    IconMail,
+    IconPuzzle2,
+    IconRocket,
+    IconServer,
+    IconSettings,
+    IconSparkles,
+    IconUserCircle,
+    IconUsers,
+    IconWorld,
 } from 'twenty-ui/display';
 import { FeatureFlagKey, PermissionFlagType } from '~/generated/graphql';
 
@@ -55,15 +58,25 @@ export type SettingsNavigationItem = {
 const useSettingsNavigationItems = (): SettingsNavigationSection[] => {
   const billing = useRecoilValue(billingState);
   const { signOut } = useAuth();
+  const location = useLocation();
 
   const isBillingEnabled = billing?.isBillingEnabled ?? false;
   const currentUser = useRecoilValue(currentUserState);
+  const currentWorkspace = useRecoilValue(currentWorkspaceState);
   const isAdminEnabled =
     (currentUser?.canImpersonate || currentUser?.canAccessFullAdminPanel) ??
     false;
   const isAIEnabled = useIsFeatureEnabled(FeatureFlagKey.IS_AI_ENABLED);
   const isApplicationEnabled = useIsFeatureEnabled(
     FeatureFlagKey.IS_APPLICATION_ENABLED,
+  );
+
+  // Verificar se está em modo LOCAL (workspace tem customBillingPlanId ou parâmetro ?local=true)
+  const urlParams = new URLSearchParams(location.search);
+  const forceLocal = urlParams.get('local') === 'true';
+
+  const useLocalBilling = forceLocal || isDefined(
+    currentWorkspace?.customBillingPlanId,
   );
 
   const permissionMap = usePermissionFlagMap();
@@ -139,8 +152,21 @@ const useSettingsNavigationItems = (): SettingsNavigationSection[] => {
           label: t`Billing`,
           path: SettingsPath.Billing,
           Icon: IconCurrencyDollar,
+          // Ocultar item antigo quando em modo LOCAL
           isHidden:
-            !isBillingEnabled || !permissionMap[PermissionFlagType.WORKSPACE],
+            !isBillingEnabled ||
+            !permissionMap[PermissionFlagType.WORKSPACE] ||
+            useLocalBilling,
+        },
+        {
+          label: t`Billing`,
+          path: SettingsPath.Billing,
+          Icon: IconCurrencyDollar,
+          // Mostrar novo item apenas quando em modo LOCAL
+          isHidden:
+            !isBillingEnabled ||
+            !permissionMap[PermissionFlagType.WORKSPACE] ||
+            !useLocalBilling,
         },
         {
           label: t`APIs & Webhooks`,
@@ -207,3 +233,4 @@ const useSettingsNavigationItems = (): SettingsNavigationSection[] => {
 };
 
 export { useSettingsNavigationItems };
+

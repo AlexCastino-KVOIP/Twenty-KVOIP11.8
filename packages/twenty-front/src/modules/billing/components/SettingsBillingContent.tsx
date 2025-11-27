@@ -2,8 +2,10 @@ import { useLingui } from '@lingui/react/macro';
 import { useRecoilValue } from 'recoil';
 
 import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
+import { SettingsBillingContentLocal } from '@/billing/components/SettingsBillingContentLocal';
 import { SettingsBillingCreditsSection } from '@/billing/components/SettingsBillingCreditsSection';
 import { SettingsBillingSubscriptionInfo } from '@/billing/components/SettingsBillingSubscriptionInfo';
+import { useGetWorkflowNodeExecutionUsage } from '@/billing/hooks/useGetWorkflowNodeExecutionUsage';
 import { useRedirect } from '@/domain-manager/hooks/useRedirect';
 import { SettingsPageContainer } from '@/settings/components/SettingsPageContainer';
 import { useSubscriptionStatus } from '@/workspace/hooks/useSubscriptionStatus';
@@ -12,17 +14,35 @@ import { H2Title, IconCircleX, IconCreditCard } from 'twenty-ui/display';
 import { Button } from 'twenty-ui/input';
 import { Section } from 'twenty-ui/layout';
 import {
-  SubscriptionStatus,
-  useBillingPortalSessionQuery,
+    SubscriptionStatus,
+    useBillingPortalSessionQuery,
 } from '~/generated-metadata/graphql';
-import { useGetWorkflowNodeExecutionUsage } from '@/billing/hooks/useGetWorkflowNodeExecutionUsage';
 
 export const SettingsBillingContent = () => {
   const { t } = useLingui();
-
   const { redirect } = useRedirect();
-
   const currentWorkspace = useRecoilValue(currentWorkspaceState);
+
+  // Se o workspace tem customBillingPlanId, usar modo LOCAL
+  // TEMPORÁRIO: Para testar, adicione ?local=true na URL
+  const urlParams = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+  const forceLocal = urlParams.get('local') === 'true';
+
+  const useLocalBilling = forceLocal || isDefined(
+    currentWorkspace?.customBillingPlanId,
+  );
+
+  // Debug: log para verificar o estado
+  if (forceLocal) {
+    console.log('🔍 [Billing] Forçando modo LOCAL via parâmetro ?local=true');
+    console.log('🔍 [Billing] currentWorkspace?.customBillingPlanId:', currentWorkspace?.customBillingPlanId);
+  }
+
+  if (useLocalBilling) {
+    return <SettingsBillingContentLocal />;
+  }
 
   const subscriptions = currentWorkspace?.billingSubscriptions;
 

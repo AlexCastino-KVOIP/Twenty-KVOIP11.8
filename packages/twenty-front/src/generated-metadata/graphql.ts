@@ -1027,6 +1027,36 @@ export type CursorPaging = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+export type CustomBillingPlanEntity = {
+  __typename?: 'CustomBillingPlanEntity';
+  active: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  currency: Scalars['String'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  features?: Maybe<Array<Scalars['String']>>;
+  id: Scalars['String'];
+  interval: SubscriptionInterval;
+  name: Scalars['String'];
+  paymentGateway?: Maybe<Scalars['String']>;
+  priceTiers?: Maybe<Array<CustomBillingPlanPriceTierEntity>>;
+  trialPeriodDays?: Maybe<Scalars['Int']>;
+  updatedAt: Scalars['DateTime'];
+  workspaceCount?: Maybe<Scalars['Int']>;
+};
+
+export type CustomBillingPlanPriceTierEntity = {
+  __typename?: 'CustomBillingPlanPriceTierEntity';
+  createdAt: Scalars['DateTime'];
+  customBillingPlan: CustomBillingPlanEntity;
+  customBillingPlanId: Scalars['String'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['String'];
+  unitAmount: Scalars['Float'];
+  upTo?: Maybe<Scalars['Float']>;
+  updatedAt: Scalars['DateTime'];
+};
+
 /** Database Event Action */
 export enum DatabaseEventAction {
   CREATED = 'CREATED',
@@ -1751,6 +1781,8 @@ export type Mutation = {
   createCoreViewFilterGroup: CoreViewFilterGroup;
   createCoreViewGroup: CoreViewGroup;
   createCoreViewSort: CoreViewSort;
+  createCustomBillingPlan: CustomBillingPlanEntity;
+  createCustomBillingPlanPriceTier: CustomBillingPlanPriceTierEntity;
   createDatabaseConfigVariable: Scalars['Boolean'];
   createDraftFromWorkflowVersion: WorkflowVersionDto;
   createEmailingDomain: EmailingDomain;
@@ -1787,6 +1819,8 @@ export type Mutation = {
   deleteCoreViewGroup: CoreViewGroup;
   deleteCoreViewSort: Scalars['Boolean'];
   deleteCurrentWorkspace: Workspace;
+  deleteCustomBillingPlan: Scalars['Boolean'];
+  deleteCustomBillingPlanPriceTier: Scalars['Boolean'];
   deleteDatabaseConfigVariable: Scalars['Boolean'];
   deleteEmailingDomain: Scalars['Boolean'];
   deleteFile: File;
@@ -1879,6 +1913,8 @@ export type Mutation = {
   updateCoreViewFilterGroup: CoreViewFilterGroup;
   updateCoreViewGroup: CoreViewGroup;
   updateCoreViewSort: CoreViewSort;
+  updateCustomBillingPlan: CustomBillingPlanEntity;
+  updateCustomBillingPlanPriceTier: CustomBillingPlanPriceTierEntity;
   updateDatabaseConfigVariable: Scalars['Boolean'];
   updateLabPublicFeatureFlag: FeatureFlagDto;
   updateOneAgent: Agent;
@@ -2004,6 +2040,25 @@ export type MutationCreateCoreViewGroupArgs = {
 
 export type MutationCreateCoreViewSortArgs = {
   input: CreateViewSortInput;
+};
+
+
+export type MutationCreateCustomBillingPlanArgs = {
+  active?: Scalars['Boolean'];
+  currency?: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  features?: InputMaybe<Array<Scalars['String']>>;
+  interval?: SubscriptionInterval;
+  name: Scalars['String'];
+  paymentGateway?: InputMaybe<Scalars['String']>;
+  trialPeriodDays?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationCreateCustomBillingPlanPriceTierArgs = {
+  planId: Scalars['String'];
+  unitAmount: Scalars['Int'];
+  upTo?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -2185,6 +2240,16 @@ export type MutationDeleteCoreViewGroupArgs = {
 
 export type MutationDeleteCoreViewSortArgs = {
   id: Scalars['String'];
+};
+
+
+export type MutationDeleteCustomBillingPlanArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteCustomBillingPlanPriceTierArgs = {
+  tierId: Scalars['String'];
 };
 
 
@@ -2632,6 +2697,26 @@ export type MutationUpdateCoreViewGroupArgs = {
 export type MutationUpdateCoreViewSortArgs = {
   id: Scalars['String'];
   input: UpdateViewSortInput;
+};
+
+
+export type MutationUpdateCustomBillingPlanArgs = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  currency?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  features?: InputMaybe<Array<Scalars['String']>>;
+  id: Scalars['String'];
+  interval?: InputMaybe<SubscriptionInterval>;
+  name?: InputMaybe<Scalars['String']>;
+  paymentGateway?: InputMaybe<Scalars['String']>;
+  trialPeriodDays?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationUpdateCustomBillingPlanPriceTierArgs = {
+  tierId: Scalars['String'];
+  unitAmount: Scalars['Int'];
+  upTo?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -3177,6 +3262,7 @@ export type PublishServerlessFunctionInput = {
 
 export type Query = {
   __typename?: 'Query';
+  activeCustomBillingPlans: Array<CustomBillingPlanEntity>;
   apiKey?: Maybe<ApiKey>;
   apiKeys: Array<ApiKey>;
   billingPortalSession: BillingSessionOutput;
@@ -3187,6 +3273,8 @@ export type Query = {
   checkWorkspaceInviteHashIsValid: WorkspaceInviteHashValidOutput;
   currentUser: User;
   currentWorkspace: Workspace;
+  customBillingPlan?: Maybe<CustomBillingPlanEntity>;
+  customBillingPlans: Array<CustomBillingPlanEntity>;
   field: Field;
   fields: FieldConnection;
   findDistantTablesWithStatus: Array<RemoteTable>;
@@ -3290,6 +3378,11 @@ export type QueryCheckUserExistsArgs = {
 
 export type QueryCheckWorkspaceInviteHashIsValidArgs = {
   inviteHash: Scalars['String'];
+};
+
+
+export type QueryCustomBillingPlanArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -5505,6 +5598,72 @@ export type GetDatabaseConfigVariableQueryVariables = Exact<{
 
 export type GetDatabaseConfigVariableQuery = { __typename?: 'Query', getDatabaseConfigVariable: { __typename?: 'ConfigVariable', name: string, description: string, value?: any | null, isSensitive: boolean, isEnvOnly: boolean, type: ConfigVariableType, options?: any | null, source: ConfigSource } };
 
+export type CreateCustomBillingPlanMutationVariables = Exact<{
+  name: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  currency: Scalars['String'];
+  interval: SubscriptionInterval;
+  trialPeriodDays?: InputMaybe<Scalars['Int']>;
+  paymentGateway?: InputMaybe<Scalars['String']>;
+  active: Scalars['Boolean'];
+  features?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type CreateCustomBillingPlanMutation = { __typename?: 'Mutation', createCustomBillingPlan: { __typename?: 'CustomBillingPlanEntity', id: string, name: string, description?: string | null, active: boolean, currency: string, interval: SubscriptionInterval, trialPeriodDays?: number | null, paymentGateway?: string | null, features?: Array<string> | null, createdAt: string, updatedAt: string, priceTiers?: Array<{ __typename?: 'CustomBillingPlanPriceTierEntity', id: string, upTo?: number | null, unitAmount: number }> | null } };
+
+export type CreateCustomBillingPlanPriceTierMutationVariables = Exact<{
+  planId: Scalars['String'];
+  upTo?: InputMaybe<Scalars['Int']>;
+  unitAmount: Scalars['Int'];
+}>;
+
+
+export type CreateCustomBillingPlanPriceTierMutation = { __typename?: 'Mutation', createCustomBillingPlanPriceTier: { __typename?: 'CustomBillingPlanPriceTierEntity', id: string, upTo?: number | null, unitAmount: number, createdAt: string, updatedAt: string } };
+
+export type DeleteCustomBillingPlanMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteCustomBillingPlanMutation = { __typename?: 'Mutation', deleteCustomBillingPlan: boolean };
+
+export type DeleteCustomBillingPlanPriceTierMutationVariables = Exact<{
+  tierId: Scalars['String'];
+}>;
+
+
+export type DeleteCustomBillingPlanPriceTierMutation = { __typename?: 'Mutation', deleteCustomBillingPlanPriceTier: boolean };
+
+export type UpdateCustomBillingPlanMutationVariables = Exact<{
+  id: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  currency?: InputMaybe<Scalars['String']>;
+  interval?: InputMaybe<SubscriptionInterval>;
+  trialPeriodDays?: InputMaybe<Scalars['Int']>;
+  paymentGateway?: InputMaybe<Scalars['String']>;
+  active?: InputMaybe<Scalars['Boolean']>;
+  features?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type UpdateCustomBillingPlanMutation = { __typename?: 'Mutation', updateCustomBillingPlan: { __typename?: 'CustomBillingPlanEntity', id: string, name: string, description?: string | null, active: boolean, currency: string, interval: SubscriptionInterval, trialPeriodDays?: number | null, paymentGateway?: string | null, features?: Array<string> | null, createdAt: string, updatedAt: string, priceTiers?: Array<{ __typename?: 'CustomBillingPlanPriceTierEntity', id: string, upTo?: number | null, unitAmount: number }> | null } };
+
+export type UpdateCustomBillingPlanPriceTierMutationVariables = Exact<{
+  tierId: Scalars['String'];
+  upTo?: InputMaybe<Scalars['Int']>;
+  unitAmount: Scalars['Int'];
+}>;
+
+
+export type UpdateCustomBillingPlanPriceTierMutation = { __typename?: 'Mutation', updateCustomBillingPlanPriceTier: { __typename?: 'CustomBillingPlanPriceTierEntity', id: string, upTo?: number | null, unitAmount: number, createdAt: string, updatedAt: string } };
+
+export type GetCustomBillingPlansQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCustomBillingPlansQuery = { __typename?: 'Query', customBillingPlans: Array<{ __typename?: 'CustomBillingPlanEntity', id: string, name: string, description?: string | null, active: boolean, currency: string, interval: SubscriptionInterval, trialPeriodDays?: number | null, paymentGateway?: string | null, features?: Array<string> | null, createdAt: string, updatedAt: string, workspaceCount?: number | null, priceTiers?: Array<{ __typename?: 'CustomBillingPlanPriceTierEntity', id: string, upTo?: number | null, unitAmount: number }> | null }> };
+
 export type UpdateWorkspaceFeatureFlagMutationVariables = Exact<{
   workspaceId: Scalars['UUID'];
   featureFlag: Scalars['String'];
@@ -5923,7 +6082,7 @@ export type BillingSubscriptionFragmentFragment = { __typename?: 'BillingSubscri
 
 export type CurrentBillingSubscriptionFragmentFragment = { __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, interval?: SubscriptionInterval | null, metadata: any, currentPeriodEnd?: string | null, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }>, billingSubscriptionItems?: Array<{ __typename?: 'BillingSubscriptionItemDTO', id: string, hasReachedCurrentPeriodCap: boolean, quantity?: number | null, stripePriceId: string, billingProduct: { __typename?: 'BillingLicensedProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } | { __typename?: 'BillingMeteredProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } }> | null };
 
-export type UserQueryFragmentFragment = { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, hasPassword: boolean, canAccessFullAdminPanel: boolean, canImpersonate: boolean, supportUserHash?: string | null, onboardingStatus?: OnboardingStatus | null, userVars?: any | null, workspaceMember?: { __typename?: 'WorkspaceMember', id: string, colorScheme: string, avatarUrl?: string | null, locale?: string | null, userEmail: string, timeZone?: string | null, dateFormat?: WorkspaceMemberDateFormatEnum | null, timeFormat?: WorkspaceMemberTimeFormatEnum | null, calendarStartDay?: number | null, numberFormat?: WorkspaceMemberNumberFormatEnum | null, name: { __typename?: 'FullName', firstName: string, lastName: string } } | null, workspaceMembers?: Array<{ __typename?: 'WorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, deletedWorkspaceMembers?: Array<{ __typename?: 'DeletedWorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, currentUserWorkspace?: { __typename?: 'UserWorkspace', id: string, permissionFlags?: Array<PermissionFlagType> | null, objectsPermissions?: Array<{ __typename?: 'ObjectPermission', objectMetadataId: string, canReadObjectRecords?: boolean | null, canUpdateObjectRecords?: boolean | null, canSoftDeleteObjectRecords?: boolean | null, canDestroyObjectRecords?: boolean | null, restrictedFields?: any | null }> | null, twoFactorAuthenticationMethodSummary?: Array<{ __typename?: 'TwoFactorAuthenticationMethodDTO', twoFactorAuthenticationMethodId: string, status: string, strategy: string }> | null } | null, currentWorkspace?: { __typename?: 'Workspace', id: string, displayName?: string | null, logo?: string | null, inviteHash?: string | null, allowImpersonation: boolean, activationStatus: WorkspaceActivationStatus, isPublicInviteLinkEnabled: boolean, isGoogleAuthEnabled: boolean, isMicrosoftAuthEnabled: boolean, isPasswordAuthEnabled: boolean, isGoogleAuthBypassEnabled: boolean, isMicrosoftAuthBypassEnabled: boolean, isPasswordAuthBypassEnabled: boolean, subdomain: string, hasValidEnterpriseKey: boolean, isCustomDomainEnabled: boolean, metadataVersion: number, workspaceMembersCount?: number | null, fastModel: string, smartModel: string, isTwoFactorAuthenticationEnforced: boolean, trashRetentionDays: number, editableProfileFields?: Array<string> | null, workspaceCustomApplication?: { __typename?: 'Application', id: string } | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, featureFlags?: Array<{ __typename?: 'FeatureFlagDTO', key: FeatureFlagKey, value: boolean }> | null, currentBillingSubscription?: { __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, interval?: SubscriptionInterval | null, metadata: any, currentPeriodEnd?: string | null, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }>, billingSubscriptionItems?: Array<{ __typename?: 'BillingSubscriptionItemDTO', id: string, hasReachedCurrentPeriodCap: boolean, quantity?: number | null, stripePriceId: string, billingProduct: { __typename?: 'BillingLicensedProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } | { __typename?: 'BillingMeteredProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } }> | null } | null, billingSubscriptions: Array<{ __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, metadata: any, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }> }>, defaultRole?: { __typename?: 'Role', id: string, label: string, description?: string | null, icon?: string | null, canUpdateAllSettings: boolean, canAccessAllTools: boolean, isEditable: boolean, canReadAllObjectRecords: boolean, canUpdateAllObjectRecords: boolean, canSoftDeleteAllObjectRecords: boolean, canDestroyAllObjectRecords: boolean, canBeAssignedToUsers: boolean, canBeAssignedToAgents: boolean, canBeAssignedToApiKeys: boolean } | null } | null, availableWorkspaces: { __typename?: 'AvailableWorkspaces', availableWorkspacesForSignIn: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }>, availableWorkspacesForSignUp: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }> } };
+export type UserQueryFragmentFragment = { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, hasPassword: boolean, canAccessFullAdminPanel: boolean, canImpersonate: boolean, supportUserHash?: string | null, onboardingStatus?: OnboardingStatus | null, userVars?: any | null, workspaceMember?: { __typename?: 'WorkspaceMember', id: string, colorScheme: string, avatarUrl?: string | null, locale?: string | null, userEmail: string, timeZone?: string | null, dateFormat?: WorkspaceMemberDateFormatEnum | null, timeFormat?: WorkspaceMemberTimeFormatEnum | null, calendarStartDay?: number | null, numberFormat?: WorkspaceMemberNumberFormatEnum | null, name: { __typename?: 'FullName', firstName: string, lastName: string } } | null, workspaceMembers?: Array<{ __typename?: 'WorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, deletedWorkspaceMembers?: Array<{ __typename?: 'DeletedWorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, currentUserWorkspace?: { __typename?: 'UserWorkspace', id: string, permissionFlags?: Array<PermissionFlagType> | null, objectsPermissions?: Array<{ __typename?: 'ObjectPermission', objectMetadataId: string, canReadObjectRecords?: boolean | null, canUpdateObjectRecords?: boolean | null, canSoftDeleteObjectRecords?: boolean | null, canDestroyObjectRecords?: boolean | null, restrictedFields?: any | null }> | null, twoFactorAuthenticationMethodSummary?: Array<{ __typename?: 'TwoFactorAuthenticationMethodDTO', twoFactorAuthenticationMethodId: string, status: string, strategy: string }> | null } | null, currentWorkspace?: { __typename?: 'Workspace', id: string, displayName?: string | null, logo?: string | null, inviteHash?: string | null, allowImpersonation: boolean, activationStatus: WorkspaceActivationStatus, isPublicInviteLinkEnabled: boolean, isGoogleAuthEnabled: boolean, isMicrosoftAuthEnabled: boolean, isPasswordAuthEnabled: boolean, isGoogleAuthBypassEnabled: boolean, isMicrosoftAuthBypassEnabled: boolean, isPasswordAuthBypassEnabled: boolean, subdomain: string, hasValidEnterpriseKey: boolean, isCustomDomainEnabled: boolean, metadataVersion: number, workspaceMembersCount?: number | null, fastModel: string, smartModel: string, isTwoFactorAuthenticationEnforced: boolean, trashRetentionDays: number, editableProfileFields?: Array<string> | null, customBillingPlanId?: string | null, workspaceCustomApplication?: { __typename?: 'Application', id: string } | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, featureFlags?: Array<{ __typename?: 'FeatureFlagDTO', key: FeatureFlagKey, value: boolean }> | null, currentBillingSubscription?: { __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, interval?: SubscriptionInterval | null, metadata: any, currentPeriodEnd?: string | null, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }>, billingSubscriptionItems?: Array<{ __typename?: 'BillingSubscriptionItemDTO', id: string, hasReachedCurrentPeriodCap: boolean, quantity?: number | null, stripePriceId: string, billingProduct: { __typename?: 'BillingLicensedProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } | { __typename?: 'BillingMeteredProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } }> | null } | null, billingSubscriptions: Array<{ __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, metadata: any, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }> }>, defaultRole?: { __typename?: 'Role', id: string, label: string, description?: string | null, icon?: string | null, canUpdateAllSettings: boolean, canAccessAllTools: boolean, isEditable: boolean, canReadAllObjectRecords: boolean, canUpdateAllObjectRecords: boolean, canSoftDeleteAllObjectRecords: boolean, canDestroyAllObjectRecords: boolean, canBeAssignedToUsers: boolean, canBeAssignedToAgents: boolean, canBeAssignedToApiKeys: boolean } | null } | null, availableWorkspaces: { __typename?: 'AvailableWorkspaces', availableWorkspacesForSignIn: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }>, availableWorkspacesForSignUp: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }> } };
 
 export type WorkspaceUrlsFragmentFragment = { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null };
 
@@ -5949,7 +6108,7 @@ export type UploadProfilePictureMutation = { __typename?: 'Mutation', uploadProf
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, hasPassword: boolean, canAccessFullAdminPanel: boolean, canImpersonate: boolean, supportUserHash?: string | null, onboardingStatus?: OnboardingStatus | null, userVars?: any | null, workspaceMember?: { __typename?: 'WorkspaceMember', id: string, colorScheme: string, avatarUrl?: string | null, locale?: string | null, userEmail: string, timeZone?: string | null, dateFormat?: WorkspaceMemberDateFormatEnum | null, timeFormat?: WorkspaceMemberTimeFormatEnum | null, calendarStartDay?: number | null, numberFormat?: WorkspaceMemberNumberFormatEnum | null, name: { __typename?: 'FullName', firstName: string, lastName: string } } | null, workspaceMembers?: Array<{ __typename?: 'WorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, deletedWorkspaceMembers?: Array<{ __typename?: 'DeletedWorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, currentUserWorkspace?: { __typename?: 'UserWorkspace', id: string, permissionFlags?: Array<PermissionFlagType> | null, objectsPermissions?: Array<{ __typename?: 'ObjectPermission', objectMetadataId: string, canReadObjectRecords?: boolean | null, canUpdateObjectRecords?: boolean | null, canSoftDeleteObjectRecords?: boolean | null, canDestroyObjectRecords?: boolean | null, restrictedFields?: any | null }> | null, twoFactorAuthenticationMethodSummary?: Array<{ __typename?: 'TwoFactorAuthenticationMethodDTO', twoFactorAuthenticationMethodId: string, status: string, strategy: string }> | null } | null, currentWorkspace?: { __typename?: 'Workspace', id: string, displayName?: string | null, logo?: string | null, inviteHash?: string | null, allowImpersonation: boolean, activationStatus: WorkspaceActivationStatus, isPublicInviteLinkEnabled: boolean, isGoogleAuthEnabled: boolean, isMicrosoftAuthEnabled: boolean, isPasswordAuthEnabled: boolean, isGoogleAuthBypassEnabled: boolean, isMicrosoftAuthBypassEnabled: boolean, isPasswordAuthBypassEnabled: boolean, subdomain: string, hasValidEnterpriseKey: boolean, isCustomDomainEnabled: boolean, metadataVersion: number, workspaceMembersCount?: number | null, fastModel: string, smartModel: string, isTwoFactorAuthenticationEnforced: boolean, trashRetentionDays: number, editableProfileFields?: Array<string> | null, workspaceCustomApplication?: { __typename?: 'Application', id: string } | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, featureFlags?: Array<{ __typename?: 'FeatureFlagDTO', key: FeatureFlagKey, value: boolean }> | null, currentBillingSubscription?: { __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, interval?: SubscriptionInterval | null, metadata: any, currentPeriodEnd?: string | null, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }>, billingSubscriptionItems?: Array<{ __typename?: 'BillingSubscriptionItemDTO', id: string, hasReachedCurrentPeriodCap: boolean, quantity?: number | null, stripePriceId: string, billingProduct: { __typename?: 'BillingLicensedProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } | { __typename?: 'BillingMeteredProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } }> | null } | null, billingSubscriptions: Array<{ __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, metadata: any, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }> }>, defaultRole?: { __typename?: 'Role', id: string, label: string, description?: string | null, icon?: string | null, canUpdateAllSettings: boolean, canAccessAllTools: boolean, isEditable: boolean, canReadAllObjectRecords: boolean, canUpdateAllObjectRecords: boolean, canSoftDeleteAllObjectRecords: boolean, canDestroyAllObjectRecords: boolean, canBeAssignedToUsers: boolean, canBeAssignedToAgents: boolean, canBeAssignedToApiKeys: boolean } | null } | null, availableWorkspaces: { __typename?: 'AvailableWorkspaces', availableWorkspacesForSignIn: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }>, availableWorkspacesForSignUp: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }> } } };
+export type GetCurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: string, firstName: string, lastName: string, email: string, hasPassword: boolean, canAccessFullAdminPanel: boolean, canImpersonate: boolean, supportUserHash?: string | null, onboardingStatus?: OnboardingStatus | null, userVars?: any | null, workspaceMember?: { __typename?: 'WorkspaceMember', id: string, colorScheme: string, avatarUrl?: string | null, locale?: string | null, userEmail: string, timeZone?: string | null, dateFormat?: WorkspaceMemberDateFormatEnum | null, timeFormat?: WorkspaceMemberTimeFormatEnum | null, calendarStartDay?: number | null, numberFormat?: WorkspaceMemberNumberFormatEnum | null, name: { __typename?: 'FullName', firstName: string, lastName: string } } | null, workspaceMembers?: Array<{ __typename?: 'WorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, deletedWorkspaceMembers?: Array<{ __typename?: 'DeletedWorkspaceMember', id: string, avatarUrl?: string | null, userEmail: string, name: { __typename?: 'FullName', firstName: string, lastName: string } }> | null, currentUserWorkspace?: { __typename?: 'UserWorkspace', id: string, permissionFlags?: Array<PermissionFlagType> | null, objectsPermissions?: Array<{ __typename?: 'ObjectPermission', objectMetadataId: string, canReadObjectRecords?: boolean | null, canUpdateObjectRecords?: boolean | null, canSoftDeleteObjectRecords?: boolean | null, canDestroyObjectRecords?: boolean | null, restrictedFields?: any | null }> | null, twoFactorAuthenticationMethodSummary?: Array<{ __typename?: 'TwoFactorAuthenticationMethodDTO', twoFactorAuthenticationMethodId: string, status: string, strategy: string }> | null } | null, currentWorkspace?: { __typename?: 'Workspace', id: string, displayName?: string | null, logo?: string | null, inviteHash?: string | null, allowImpersonation: boolean, activationStatus: WorkspaceActivationStatus, isPublicInviteLinkEnabled: boolean, isGoogleAuthEnabled: boolean, isMicrosoftAuthEnabled: boolean, isPasswordAuthEnabled: boolean, isGoogleAuthBypassEnabled: boolean, isMicrosoftAuthBypassEnabled: boolean, isPasswordAuthBypassEnabled: boolean, subdomain: string, hasValidEnterpriseKey: boolean, isCustomDomainEnabled: boolean, metadataVersion: number, workspaceMembersCount?: number | null, fastModel: string, smartModel: string, isTwoFactorAuthenticationEnforced: boolean, trashRetentionDays: number, editableProfileFields?: Array<string> | null, customBillingPlanId?: string | null, workspaceCustomApplication?: { __typename?: 'Application', id: string } | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, featureFlags?: Array<{ __typename?: 'FeatureFlagDTO', key: FeatureFlagKey, value: boolean }> | null, currentBillingSubscription?: { __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, interval?: SubscriptionInterval | null, metadata: any, currentPeriodEnd?: string | null, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }>, billingSubscriptionItems?: Array<{ __typename?: 'BillingSubscriptionItemDTO', id: string, hasReachedCurrentPeriodCap: boolean, quantity?: number | null, stripePriceId: string, billingProduct: { __typename?: 'BillingLicensedProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } | { __typename?: 'BillingMeteredProduct', name: string, description: string, images?: Array<string> | null, metadata: { __typename?: 'BillingProductMetadata', productKey: BillingProductKey, planKey: BillingPlanKey, priceUsageBased: BillingUsageType } } }> | null } | null, billingSubscriptions: Array<{ __typename?: 'BillingSubscription', id: string, status: SubscriptionStatus, metadata: any, phases: Array<{ __typename?: 'BillingSubscriptionSchedulePhase', start_date: number, end_date: number, items: Array<{ __typename?: 'BillingSubscriptionSchedulePhaseItem', price: string, quantity?: number | null }> }> }>, defaultRole?: { __typename?: 'Role', id: string, label: string, description?: string | null, icon?: string | null, canUpdateAllSettings: boolean, canAccessAllTools: boolean, isEditable: boolean, canReadAllObjectRecords: boolean, canUpdateAllObjectRecords: boolean, canSoftDeleteAllObjectRecords: boolean, canDestroyAllObjectRecords: boolean, canBeAssignedToUsers: boolean, canBeAssignedToAgents: boolean, canBeAssignedToApiKeys: boolean } | null } | null, availableWorkspaces: { __typename?: 'AvailableWorkspaces', availableWorkspacesForSignIn: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }>, availableWorkspacesForSignUp: Array<{ __typename?: 'AvailableWorkspace', id: string, displayName?: string | null, loginToken?: string | null, inviteHash?: string | null, personalInviteToken?: string | null, logo?: string | null, workspaceUrls: { __typename?: 'WorkspaceUrls', subdomainUrl: string, customUrl?: string | null }, sso: Array<{ __typename?: 'SSOConnection', type: IdentityProviderType, id: string, issuer: string, name: string, status: SsoIdentityProviderStatus }> }> } } };
 
 export type ViewFieldFragmentFragment = { __typename?: 'CoreViewField', id: string, fieldMetadataId: string, viewId: string, isVisible: boolean, position: number, size: number, aggregateOperation?: AggregateOperations | null, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
@@ -6965,6 +7124,7 @@ export const UserQueryFragmentFragmentDoc = gql`
     isTwoFactorAuthenticationEnforced
     trashRetentionDays
     editableProfileFields
+    customBillingPlanId
   }
   availableWorkspaces {
     ...AvailableWorkspacesFragment
@@ -10165,6 +10325,334 @@ export function useGetDatabaseConfigVariableLazyQuery(baseOptions?: Apollo.LazyQ
 export type GetDatabaseConfigVariableQueryHookResult = ReturnType<typeof useGetDatabaseConfigVariableQuery>;
 export type GetDatabaseConfigVariableLazyQueryHookResult = ReturnType<typeof useGetDatabaseConfigVariableLazyQuery>;
 export type GetDatabaseConfigVariableQueryResult = Apollo.QueryResult<GetDatabaseConfigVariableQuery, GetDatabaseConfigVariableQueryVariables>;
+export const CreateCustomBillingPlanDocument = gql`
+    mutation CreateCustomBillingPlan($name: String!, $description: String, $currency: String!, $interval: SubscriptionInterval!, $trialPeriodDays: Int, $paymentGateway: String, $active: Boolean!, $features: [String!]) {
+  createCustomBillingPlan(
+    name: $name
+    description: $description
+    currency: $currency
+    interval: $interval
+    trialPeriodDays: $trialPeriodDays
+    paymentGateway: $paymentGateway
+    active: $active
+    features: $features
+  ) {
+    id
+    name
+    description
+    active
+    currency
+    interval
+    trialPeriodDays
+    paymentGateway
+    features
+    createdAt
+    updatedAt
+    priceTiers {
+      id
+      upTo
+      unitAmount
+    }
+  }
+}
+    `;
+export type CreateCustomBillingPlanMutationFn = Apollo.MutationFunction<CreateCustomBillingPlanMutation, CreateCustomBillingPlanMutationVariables>;
+
+/**
+ * __useCreateCustomBillingPlanMutation__
+ *
+ * To run a mutation, you first call `useCreateCustomBillingPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCustomBillingPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCustomBillingPlanMutation, { data, loading, error }] = useCreateCustomBillingPlanMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      currency: // value for 'currency'
+ *      interval: // value for 'interval'
+ *      trialPeriodDays: // value for 'trialPeriodDays'
+ *      paymentGateway: // value for 'paymentGateway'
+ *      active: // value for 'active'
+ *      features: // value for 'features'
+ *   },
+ * });
+ */
+export function useCreateCustomBillingPlanMutation(baseOptions?: Apollo.MutationHookOptions<CreateCustomBillingPlanMutation, CreateCustomBillingPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCustomBillingPlanMutation, CreateCustomBillingPlanMutationVariables>(CreateCustomBillingPlanDocument, options);
+      }
+export type CreateCustomBillingPlanMutationHookResult = ReturnType<typeof useCreateCustomBillingPlanMutation>;
+export type CreateCustomBillingPlanMutationResult = Apollo.MutationResult<CreateCustomBillingPlanMutation>;
+export type CreateCustomBillingPlanMutationOptions = Apollo.BaseMutationOptions<CreateCustomBillingPlanMutation, CreateCustomBillingPlanMutationVariables>;
+export const CreateCustomBillingPlanPriceTierDocument = gql`
+    mutation CreateCustomBillingPlanPriceTier($planId: String!, $upTo: Int, $unitAmount: Int!) {
+  createCustomBillingPlanPriceTier(
+    planId: $planId
+    upTo: $upTo
+    unitAmount: $unitAmount
+  ) {
+    id
+    upTo
+    unitAmount
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateCustomBillingPlanPriceTierMutationFn = Apollo.MutationFunction<CreateCustomBillingPlanPriceTierMutation, CreateCustomBillingPlanPriceTierMutationVariables>;
+
+/**
+ * __useCreateCustomBillingPlanPriceTierMutation__
+ *
+ * To run a mutation, you first call `useCreateCustomBillingPlanPriceTierMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCustomBillingPlanPriceTierMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCustomBillingPlanPriceTierMutation, { data, loading, error }] = useCreateCustomBillingPlanPriceTierMutation({
+ *   variables: {
+ *      planId: // value for 'planId'
+ *      upTo: // value for 'upTo'
+ *      unitAmount: // value for 'unitAmount'
+ *   },
+ * });
+ */
+export function useCreateCustomBillingPlanPriceTierMutation(baseOptions?: Apollo.MutationHookOptions<CreateCustomBillingPlanPriceTierMutation, CreateCustomBillingPlanPriceTierMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCustomBillingPlanPriceTierMutation, CreateCustomBillingPlanPriceTierMutationVariables>(CreateCustomBillingPlanPriceTierDocument, options);
+      }
+export type CreateCustomBillingPlanPriceTierMutationHookResult = ReturnType<typeof useCreateCustomBillingPlanPriceTierMutation>;
+export type CreateCustomBillingPlanPriceTierMutationResult = Apollo.MutationResult<CreateCustomBillingPlanPriceTierMutation>;
+export type CreateCustomBillingPlanPriceTierMutationOptions = Apollo.BaseMutationOptions<CreateCustomBillingPlanPriceTierMutation, CreateCustomBillingPlanPriceTierMutationVariables>;
+export const DeleteCustomBillingPlanDocument = gql`
+    mutation DeleteCustomBillingPlan($id: String!) {
+  deleteCustomBillingPlan(id: $id)
+}
+    `;
+export type DeleteCustomBillingPlanMutationFn = Apollo.MutationFunction<DeleteCustomBillingPlanMutation, DeleteCustomBillingPlanMutationVariables>;
+
+/**
+ * __useDeleteCustomBillingPlanMutation__
+ *
+ * To run a mutation, you first call `useDeleteCustomBillingPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCustomBillingPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCustomBillingPlanMutation, { data, loading, error }] = useDeleteCustomBillingPlanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCustomBillingPlanMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCustomBillingPlanMutation, DeleteCustomBillingPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteCustomBillingPlanMutation, DeleteCustomBillingPlanMutationVariables>(DeleteCustomBillingPlanDocument, options);
+      }
+export type DeleteCustomBillingPlanMutationHookResult = ReturnType<typeof useDeleteCustomBillingPlanMutation>;
+export type DeleteCustomBillingPlanMutationResult = Apollo.MutationResult<DeleteCustomBillingPlanMutation>;
+export type DeleteCustomBillingPlanMutationOptions = Apollo.BaseMutationOptions<DeleteCustomBillingPlanMutation, DeleteCustomBillingPlanMutationVariables>;
+export const DeleteCustomBillingPlanPriceTierDocument = gql`
+    mutation DeleteCustomBillingPlanPriceTier($tierId: String!) {
+  deleteCustomBillingPlanPriceTier(tierId: $tierId)
+}
+    `;
+export type DeleteCustomBillingPlanPriceTierMutationFn = Apollo.MutationFunction<DeleteCustomBillingPlanPriceTierMutation, DeleteCustomBillingPlanPriceTierMutationVariables>;
+
+/**
+ * __useDeleteCustomBillingPlanPriceTierMutation__
+ *
+ * To run a mutation, you first call `useDeleteCustomBillingPlanPriceTierMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCustomBillingPlanPriceTierMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCustomBillingPlanPriceTierMutation, { data, loading, error }] = useDeleteCustomBillingPlanPriceTierMutation({
+ *   variables: {
+ *      tierId: // value for 'tierId'
+ *   },
+ * });
+ */
+export function useDeleteCustomBillingPlanPriceTierMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCustomBillingPlanPriceTierMutation, DeleteCustomBillingPlanPriceTierMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteCustomBillingPlanPriceTierMutation, DeleteCustomBillingPlanPriceTierMutationVariables>(DeleteCustomBillingPlanPriceTierDocument, options);
+      }
+export type DeleteCustomBillingPlanPriceTierMutationHookResult = ReturnType<typeof useDeleteCustomBillingPlanPriceTierMutation>;
+export type DeleteCustomBillingPlanPriceTierMutationResult = Apollo.MutationResult<DeleteCustomBillingPlanPriceTierMutation>;
+export type DeleteCustomBillingPlanPriceTierMutationOptions = Apollo.BaseMutationOptions<DeleteCustomBillingPlanPriceTierMutation, DeleteCustomBillingPlanPriceTierMutationVariables>;
+export const UpdateCustomBillingPlanDocument = gql`
+    mutation UpdateCustomBillingPlan($id: String!, $name: String, $description: String, $currency: String, $interval: SubscriptionInterval, $trialPeriodDays: Int, $paymentGateway: String, $active: Boolean, $features: [String!]) {
+  updateCustomBillingPlan(
+    id: $id
+    name: $name
+    description: $description
+    currency: $currency
+    interval: $interval
+    trialPeriodDays: $trialPeriodDays
+    paymentGateway: $paymentGateway
+    active: $active
+    features: $features
+  ) {
+    id
+    name
+    description
+    active
+    currency
+    interval
+    trialPeriodDays
+    paymentGateway
+    features
+    createdAt
+    updatedAt
+    priceTiers {
+      id
+      upTo
+      unitAmount
+    }
+  }
+}
+    `;
+export type UpdateCustomBillingPlanMutationFn = Apollo.MutationFunction<UpdateCustomBillingPlanMutation, UpdateCustomBillingPlanMutationVariables>;
+
+/**
+ * __useUpdateCustomBillingPlanMutation__
+ *
+ * To run a mutation, you first call `useUpdateCustomBillingPlanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCustomBillingPlanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCustomBillingPlanMutation, { data, loading, error }] = useUpdateCustomBillingPlanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      currency: // value for 'currency'
+ *      interval: // value for 'interval'
+ *      trialPeriodDays: // value for 'trialPeriodDays'
+ *      paymentGateway: // value for 'paymentGateway'
+ *      active: // value for 'active'
+ *      features: // value for 'features'
+ *   },
+ * });
+ */
+export function useUpdateCustomBillingPlanMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCustomBillingPlanMutation, UpdateCustomBillingPlanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCustomBillingPlanMutation, UpdateCustomBillingPlanMutationVariables>(UpdateCustomBillingPlanDocument, options);
+      }
+export type UpdateCustomBillingPlanMutationHookResult = ReturnType<typeof useUpdateCustomBillingPlanMutation>;
+export type UpdateCustomBillingPlanMutationResult = Apollo.MutationResult<UpdateCustomBillingPlanMutation>;
+export type UpdateCustomBillingPlanMutationOptions = Apollo.BaseMutationOptions<UpdateCustomBillingPlanMutation, UpdateCustomBillingPlanMutationVariables>;
+export const UpdateCustomBillingPlanPriceTierDocument = gql`
+    mutation UpdateCustomBillingPlanPriceTier($tierId: String!, $upTo: Int, $unitAmount: Int!) {
+  updateCustomBillingPlanPriceTier(
+    tierId: $tierId
+    upTo: $upTo
+    unitAmount: $unitAmount
+  ) {
+    id
+    upTo
+    unitAmount
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateCustomBillingPlanPriceTierMutationFn = Apollo.MutationFunction<UpdateCustomBillingPlanPriceTierMutation, UpdateCustomBillingPlanPriceTierMutationVariables>;
+
+/**
+ * __useUpdateCustomBillingPlanPriceTierMutation__
+ *
+ * To run a mutation, you first call `useUpdateCustomBillingPlanPriceTierMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCustomBillingPlanPriceTierMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCustomBillingPlanPriceTierMutation, { data, loading, error }] = useUpdateCustomBillingPlanPriceTierMutation({
+ *   variables: {
+ *      tierId: // value for 'tierId'
+ *      upTo: // value for 'upTo'
+ *      unitAmount: // value for 'unitAmount'
+ *   },
+ * });
+ */
+export function useUpdateCustomBillingPlanPriceTierMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCustomBillingPlanPriceTierMutation, UpdateCustomBillingPlanPriceTierMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCustomBillingPlanPriceTierMutation, UpdateCustomBillingPlanPriceTierMutationVariables>(UpdateCustomBillingPlanPriceTierDocument, options);
+      }
+export type UpdateCustomBillingPlanPriceTierMutationHookResult = ReturnType<typeof useUpdateCustomBillingPlanPriceTierMutation>;
+export type UpdateCustomBillingPlanPriceTierMutationResult = Apollo.MutationResult<UpdateCustomBillingPlanPriceTierMutation>;
+export type UpdateCustomBillingPlanPriceTierMutationOptions = Apollo.BaseMutationOptions<UpdateCustomBillingPlanPriceTierMutation, UpdateCustomBillingPlanPriceTierMutationVariables>;
+export const GetCustomBillingPlansDocument = gql`
+    query GetCustomBillingPlans {
+  customBillingPlans {
+    id
+    name
+    description
+    active
+    currency
+    interval
+    trialPeriodDays
+    paymentGateway
+    features
+    createdAt
+    updatedAt
+    workspaceCount
+    priceTiers {
+      id
+      upTo
+      unitAmount
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCustomBillingPlansQuery__
+ *
+ * To run a query within a React component, call `useGetCustomBillingPlansQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCustomBillingPlansQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCustomBillingPlansQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCustomBillingPlansQuery(baseOptions?: Apollo.QueryHookOptions<GetCustomBillingPlansQuery, GetCustomBillingPlansQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCustomBillingPlansQuery, GetCustomBillingPlansQueryVariables>(GetCustomBillingPlansDocument, options);
+      }
+export function useGetCustomBillingPlansLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCustomBillingPlansQuery, GetCustomBillingPlansQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCustomBillingPlansQuery, GetCustomBillingPlansQueryVariables>(GetCustomBillingPlansDocument, options);
+        }
+export type GetCustomBillingPlansQueryHookResult = ReturnType<typeof useGetCustomBillingPlansQuery>;
+export type GetCustomBillingPlansLazyQueryHookResult = ReturnType<typeof useGetCustomBillingPlansLazyQuery>;
+export type GetCustomBillingPlansQueryResult = Apollo.QueryResult<GetCustomBillingPlansQuery, GetCustomBillingPlansQueryVariables>;
 export const UpdateWorkspaceFeatureFlagDocument = gql`
     mutation UpdateWorkspaceFeatureFlag($workspaceId: UUID!, $featureFlag: String!, $value: Boolean!) {
   updateWorkspaceFeatureFlag(

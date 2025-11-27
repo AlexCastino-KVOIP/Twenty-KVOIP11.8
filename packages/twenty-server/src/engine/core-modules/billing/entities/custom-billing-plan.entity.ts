@@ -1,18 +1,22 @@
 /* @license Enterprise */
 
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Relation,
-  UpdateDateColumn,
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    Relation,
+    UpdateDateColumn,
 } from 'typeorm';
 
-import { SubscriptionInterval } from 'src/engine/core-modules/billing/enums/billing-subscription-interval.enum';
 import { CustomBillingPlanPriceTierEntity } from 'src/engine/core-modules/billing/entities/custom-billing-plan-price-tier.entity';
+import { SubscriptionInterval } from 'src/engine/core-modules/billing/enums/billing-subscription-interval.enum';
+
+registerEnumType(SubscriptionInterval, {
+  name: 'SubscriptionInterval',
+});
 
 @ObjectType()
 @Entity({ name: 'customBillingPlan', schema: 'core' })
@@ -58,7 +62,7 @@ export class CustomBillingPlanEntity {
   })
   interval: SubscriptionInterval;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => Int, { nullable: true })
   @Column({ nullable: true, type: 'integer' })
   trialPeriodDays: number | null;
 
@@ -66,12 +70,19 @@ export class CustomBillingPlanEntity {
   @Column({ nullable: true, type: 'text' })
   paymentGateway: string | null;
 
-  @Field(() => [CustomBillingPlanPriceTierEntity])
+  @Field(() => [String], { nullable: true, defaultValue: [] })
+  @Column({ nullable: true, type: 'jsonb', default: '[]' })
+  features: string[] | null;
+
+  @Field(() => [CustomBillingPlanPriceTierEntity], { nullable: true, defaultValue: [] })
   @OneToMany(
     () => CustomBillingPlanPriceTierEntity,
     (priceTier) => priceTier.customBillingPlan,
     { cascade: true },
   )
-  priceTiers: Relation<CustomBillingPlanPriceTierEntity[]>;
+  priceTiers?: Relation<CustomBillingPlanPriceTierEntity[]>;
+
+  @Field(() => Int, { nullable: true })
+  workspaceCount?: number;
 }
 

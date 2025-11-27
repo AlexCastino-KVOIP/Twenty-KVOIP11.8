@@ -1010,6 +1010,36 @@ export type CursorPaging = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+export type CustomBillingPlanEntity = {
+  __typename?: 'CustomBillingPlanEntity';
+  active: Scalars['Boolean'];
+  createdAt: Scalars['DateTime'];
+  currency: Scalars['String'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  features?: Maybe<Array<Scalars['String']>>;
+  id: Scalars['String'];
+  interval: SubscriptionInterval;
+  name: Scalars['String'];
+  paymentGateway?: Maybe<Scalars['String']>;
+  priceTiers?: Maybe<Array<CustomBillingPlanPriceTierEntity>>;
+  trialPeriodDays?: Maybe<Scalars['Int']>;
+  updatedAt: Scalars['DateTime'];
+  workspaceCount?: Maybe<Scalars['Int']>;
+};
+
+export type CustomBillingPlanPriceTierEntity = {
+  __typename?: 'CustomBillingPlanPriceTierEntity';
+  createdAt: Scalars['DateTime'];
+  customBillingPlan: CustomBillingPlanEntity;
+  customBillingPlanId: Scalars['String'];
+  deletedAt?: Maybe<Scalars['DateTime']>;
+  id: Scalars['String'];
+  unitAmount: Scalars['Float'];
+  upTo?: Maybe<Scalars['Float']>;
+  updatedAt: Scalars['DateTime'];
+};
+
 /** Database Event Action */
 export enum DatabaseEventAction {
   CREATED = 'CREATED',
@@ -1726,6 +1756,8 @@ export type Mutation = {
   createCoreViewFilterGroup: CoreViewFilterGroup;
   createCoreViewGroup: CoreViewGroup;
   createCoreViewSort: CoreViewSort;
+  createCustomBillingPlan: CustomBillingPlanEntity;
+  createCustomBillingPlanPriceTier: CustomBillingPlanPriceTierEntity;
   createDatabaseConfigVariable: Scalars['Boolean'];
   createDraftFromWorkflowVersion: WorkflowVersionDto;
   createEmailingDomain: EmailingDomain;
@@ -1761,6 +1793,8 @@ export type Mutation = {
   deleteCoreViewGroup: CoreViewGroup;
   deleteCoreViewSort: Scalars['Boolean'];
   deleteCurrentWorkspace: Workspace;
+  deleteCustomBillingPlan: Scalars['Boolean'];
+  deleteCustomBillingPlanPriceTier: Scalars['Boolean'];
   deleteDatabaseConfigVariable: Scalars['Boolean'];
   deleteEmailingDomain: Scalars['Boolean'];
   deleteFile: File;
@@ -1849,6 +1883,8 @@ export type Mutation = {
   updateCoreViewFilterGroup: CoreViewFilterGroup;
   updateCoreViewGroup: CoreViewGroup;
   updateCoreViewSort: CoreViewSort;
+  updateCustomBillingPlan: CustomBillingPlanEntity;
+  updateCustomBillingPlanPriceTier: CustomBillingPlanPriceTierEntity;
   updateDatabaseConfigVariable: Scalars['Boolean'];
   updateLabPublicFeatureFlag: FeatureFlagDto;
   updateOneAgent: Agent;
@@ -1973,6 +2009,25 @@ export type MutationCreateCoreViewGroupArgs = {
 
 export type MutationCreateCoreViewSortArgs = {
   input: CreateViewSortInput;
+};
+
+
+export type MutationCreateCustomBillingPlanArgs = {
+  active?: Scalars['Boolean'];
+  currency?: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  features?: InputMaybe<Array<Scalars['String']>>;
+  interval?: SubscriptionInterval;
+  name: Scalars['String'];
+  paymentGateway?: InputMaybe<Scalars['String']>;
+  trialPeriodDays?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationCreateCustomBillingPlanPriceTierArgs = {
+  planId: Scalars['String'];
+  unitAmount: Scalars['Int'];
+  upTo?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -2144,6 +2199,16 @@ export type MutationDeleteCoreViewGroupArgs = {
 
 export type MutationDeleteCoreViewSortArgs = {
   id: Scalars['String'];
+};
+
+
+export type MutationDeleteCustomBillingPlanArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteCustomBillingPlanPriceTierArgs = {
+  tierId: Scalars['String'];
 };
 
 
@@ -2571,6 +2636,26 @@ export type MutationUpdateCoreViewGroupArgs = {
 export type MutationUpdateCoreViewSortArgs = {
   id: Scalars['String'];
   input: UpdateViewSortInput;
+};
+
+
+export type MutationUpdateCustomBillingPlanArgs = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  currency?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  features?: InputMaybe<Array<Scalars['String']>>;
+  id: Scalars['String'];
+  interval?: InputMaybe<SubscriptionInterval>;
+  name?: InputMaybe<Scalars['String']>;
+  paymentGateway?: InputMaybe<Scalars['String']>;
+  trialPeriodDays?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationUpdateCustomBillingPlanPriceTierArgs = {
+  tierId: Scalars['String'];
+  unitAmount: Scalars['Int'];
+  upTo?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -3111,6 +3196,7 @@ export type PublishServerlessFunctionInput = {
 
 export type Query = {
   __typename?: 'Query';
+  activeCustomBillingPlans: Array<CustomBillingPlanEntity>;
   apiKey?: Maybe<ApiKey>;
   apiKeys: Array<ApiKey>;
   billingPortalSession: BillingSessionOutput;
@@ -3118,6 +3204,8 @@ export type Query = {
   checkWorkspaceInviteHashIsValid: WorkspaceInviteHashValidOutput;
   currentUser: User;
   currentWorkspace: Workspace;
+  customBillingPlan?: Maybe<CustomBillingPlanEntity>;
+  customBillingPlans: Array<CustomBillingPlanEntity>;
   field: Field;
   fields: FieldConnection;
   findManyAgents: Array<Agent>;
@@ -3208,6 +3296,11 @@ export type QueryCheckUserExistsArgs = {
 
 export type QueryCheckWorkspaceInviteHashIsValidArgs = {
   inviteHash: Scalars['String'];
+};
+
+
+export type QueryCustomBillingPlanArgs = {
+  id: Scalars['String'];
 };
 
 
