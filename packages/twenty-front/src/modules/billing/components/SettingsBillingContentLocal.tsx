@@ -41,9 +41,9 @@ const StyledProgressWave = styled.div<{ percentage: number }>`
   height: 100%;
   background: linear-gradient(
     90deg,
-    ${({ theme }) => theme.color.blue10} 0%,
-    ${({ theme }) => theme.color.blue11} 50%,
-    ${({ theme }) => theme.color.blue10} 100%
+    ${({ theme }) => theme.color.blue} 0%,
+    ${({ theme }) => theme.color.blue9} 50%,
+    ${({ theme }) => theme.color.blue} 100%
   );
   background-size: 200% 100%;
   animation: wave 3s ease-in-out infinite, fill 1s ease-out;
@@ -76,7 +76,7 @@ const StyledProgressWave = styled.div<{ percentage: number }>`
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.2) 50%,
+      ${({ theme }) => theme.background.transparent.strong} 50%,
       transparent 100%
     );
     animation: shine 2s ease-in-out infinite;
@@ -191,7 +191,7 @@ const StyledInfoValue = styled.span`
 const StyledTierCard = styled.div<{ isActive: boolean; percentage: number }>`
   position: relative;
   background: ${({ theme, isActive }) =>
-    isActive ? theme.background.primary : theme.background.primary};
+    isActive ? 'transparent' : theme.background.primary};
   border: 2px solid
     ${({ theme, isActive }) =>
       isActive ? theme.color.blue10 : theme.border.color.medium};
@@ -216,9 +216,9 @@ const StyledTierCard = styled.div<{ isActive: boolean; percentage: number }>`
       background:
         linear-gradient(
           90deg,
-          ${theme.color.blue10}30 0%,
-          ${theme.color.blue11}40 50%,
-          ${theme.color.blue10}35 100%
+          ${theme.background.transparent.strong} 0%,
+          ${theme.background.transparent.medium} 50%,
+          ${theme.background.transparent.strong} 100%
         );
       background-size: 200% 100%;
       animation: waveHorizontal 4s linear infinite, fillHorizontal 1.5s ease-out;
@@ -238,8 +238,8 @@ const StyledTierCard = styled.div<{ isActive: boolean; percentage: number }>`
         linear-gradient(
           90deg,
           transparent 0%,
-          rgba(255, 255, 255, 0.25) 40%,
-          rgba(255, 255, 255, 0.2) 60%,
+          ${theme.background.transparent.strong} 40%,
+          ${theme.background.transparent.medium} 60%,
           transparent 100%
         );
       animation: waterWave 3s linear infinite;
@@ -551,8 +551,8 @@ const StyledTierPrice = styled.div`
 
 const StyledCurrentTierBadge = styled.div`
   display: inline-block;
-  background: ${({ theme }) => theme.color.blue10};
-  color: ${({ theme }) => theme.color.blue11};
+  background: ${({ theme }) => theme.tag.background.blue};
+  color: ${({ theme }) => theme.tag.text.blue};
   padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(2)};
   border-radius: ${({ theme }) => theme.border.radius.sm};
   font-size: ${({ theme }) => theme.font.size.xs};
