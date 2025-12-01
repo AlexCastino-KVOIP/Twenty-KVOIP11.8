@@ -22,9 +22,9 @@ import { SubMenuTopBarContainer } from '@/ui/layout/page/components/SubMenuTopBa
 import { Table } from '@/ui/layout/table/components/Table';
 import { TableHeader } from '@/ui/layout/table/components/TableHeader';
 import { type WorkspaceMember } from '@/workspace-member/types/WorkspaceMember';
-import { WorkspaceInviteLink } from '@/workspace/components/WorkspaceInviteLink';
 import { WorkspaceInviteTeam } from '@/workspace/components/WorkspaceInviteTeam';
 import { ReplaceUserModal } from '@/workspace/components/ReplaceUserModal';
+import { InviteLinkModal } from '@/workspace/components/InviteLinkModal';
 import { type ApolloError } from '@apollo/client';
 import { formatDistanceToNow } from 'date-fns';
 import { SettingsPath } from 'twenty-shared/types';
@@ -38,6 +38,7 @@ import {
   Avatar,
   H2Title,
   IconMail,
+  IconLink,
   IconReload,
   IconSearch,
   IconSwitchHorizontal,
@@ -67,6 +68,7 @@ export const WORKSPACE_MEMBER_DELETION_MODAL_ID =
 
 const REPLACE_INVITE_MODAL_ID = 'replace-invite-modal';
 const REPLACE_MEMBER_MODAL_ID = 'replace-member-modal';
+const INVITE_LINK_MODAL_ID = 'invite-link-modal';
 
 const StyledButtonContainer = styled.div`
   align-items: center;
@@ -164,6 +166,7 @@ export const SettingsWorkspaceMembers = () => {
 
   const [inviteToReplace, setInviteToReplace] = useState<string | null>(null);
   const [memberToReplace, setMemberToReplace] = useState<{ id: string; email: string } | null>(null);
+  const [inviteLinkToShow, setInviteLinkToShow] = useState<{ id: string; email: string } | null>(null);
 
   const currentWorkspace = useRecoilValue(currentWorkspaceState);
   const currentWorkspaceMember = useRecoilValue(currentWorkspaceMemberState);
@@ -363,22 +366,10 @@ export const SettingsWorkspaceMembers = () => {
       ]}
     >
       <SettingsPageContainer>
-        {currentWorkspace?.inviteHash &&
-          currentWorkspace?.isPublicInviteLinkEnabled && (
-            <Section>
-              <H2Title
-                title={t`Invite by link`}
-                description={t`Share this link to invite users to join your workspace`}
-              />
-              <WorkspaceInviteLink
-                inviteLink={`${window.location.origin}/invite/${currentWorkspace?.inviteHash}`}
-              />
-            </Section>
-          )}
         <Section>
           <H2Title
-            title={t`Invite by email`}
-            description={t`Send an invite email to your team`}
+            title={t`Contratar Ramal`}
+            description={t`Contrate um novo ramal para adicionar usuários ao workspace`}
           />
           <WorkspaceInviteTeam />
           {isNonEmptyArray(workspaceInvitations) && (
@@ -430,6 +421,18 @@ export const SettingsWorkspaceMembers = () => {
                           variant="tertiary"
                           size="medium"
                           Icon={IconReload}
+                        />
+                        <IconButton
+                          onClick={() => {
+                            setInviteLinkToShow({
+                              id: workspaceInvitation.id,
+                              email: workspaceInvitation.email,
+                            });
+                            openModal(INVITE_LINK_MODAL_ID);
+                          }}
+                          variant="tertiary"
+                          size="medium"
+                          Icon={IconLink}
                         />
                         <IconButton
                           onClick={() => {
@@ -603,6 +606,14 @@ export const SettingsWorkspaceMembers = () => {
           currentEmail={memberToReplace.email}
           onReplace={handleReplaceMember}
           onCancel={() => setMemberToReplace(null)}
+        />
+      )}
+      {inviteLinkToShow && (
+        <InviteLinkModal
+          modalId={INVITE_LINK_MODAL_ID}
+          inviteLink={`${window.location.origin}/invite/${currentWorkspace?.inviteHash || ''}?inviteToken=${inviteLinkToShow.id}`}
+          email={inviteLinkToShow.email}
+          onClose={() => setInviteLinkToShow(null)}
         />
       )}
     </SubMenuTopBarContainer>

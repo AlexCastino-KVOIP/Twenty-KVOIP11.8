@@ -189,10 +189,12 @@ export class SignInUpService {
       );
     }
 
+    // Validar convite sem verificar email (permite usar o link com qualquer email)
     const invitationValidation =
       await this.workspaceInvitationService.validatePersonalInvitation({
         workspacePersonalInviteToken: params.invitation.value,
         email,
+        skipEmailValidation: true, // Permite usar o link com qualquer email
       });
 
     if (!invitationValidation?.isValid) {
@@ -207,9 +209,9 @@ export class SignInUpService {
       userData: params.userData,
     });
 
-    await this.workspaceInvitationService.invalidateWorkspaceInvitation(
-      invitationValidation.workspace.id,
-      email,
+    // Invalidar o convite pelo token, não pelo email (assim funciona mesmo com email diferente)
+    await this.workspaceInvitationService.invalidateWorkspaceInvitationByToken(
+      params.invitation.value,
     );
 
     await this.userService.markEmailAsVerified(updatedUser.id);

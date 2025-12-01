@@ -54,9 +54,11 @@ export class WorkspaceInvitationService {
   async validatePersonalInvitation({
     workspacePersonalInviteToken,
     email,
+    skipEmailValidation = false,
   }: {
     workspacePersonalInviteToken?: string;
     email: string;
+    skipEmailValidation?: boolean;
   }) {
     try {
       const appToken = await this.appTokenRepository.findOne({
@@ -71,7 +73,8 @@ export class WorkspaceInvitationService {
         throw new Error('Invalid invitation token');
       }
 
-      if (!appToken.context?.email || appToken.context?.email !== email) {
+      // Se skipEmailValidation for true, não valida o email (permite usar o link com qualquer email)
+      if (!skipEmailValidation && (!appToken.context?.email || appToken.context?.email !== email)) {
         throw new Error('Email does not match the invitation');
       }
 
@@ -79,7 +82,7 @@ export class WorkspaceInvitationService {
         throw new Error('Invitation expired');
       }
 
-      return { isValid: true, workspace: appToken.workspace };
+      return { isValid: true, workspace: appToken.workspace, appToken };
     } catch (err) {
       throw new AuthException(
         err.message,
@@ -201,6 +204,28 @@ export class WorkspaceInvitationService {
     await this.appTokenRepository.delete(appToken.id);
 
     return 'success';
+  }
+
+  async invalidateWorkspaceInvitationByToken(
+    workspacePersonalInviteToken: string,
+    queryRunner?: QueryRunner,
+  ) {
+    const appToken = await this.appTokenRepository.findOne({
+      where: {
+        value: workspacePersonalInviteToken,
+        type: AppTokenType.InvitationToken,
+      },
+    });
+
+    if (!isDefined(appToken)) {
+      return;
+    }
+
+    if (queryRunner) {
+      await queryRunner.manager.remove(appToken);
+    } else {
+      await this.appTokenRepository.remove(appToken);
+    }
   }
 
   async invalidateWorkspaceInvitation(
