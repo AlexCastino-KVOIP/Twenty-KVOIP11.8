@@ -7,7 +7,7 @@ import { useCloseDropdown } from '@/ui/layout/dropdown/hooks/useCloseDropdown';
 import { type WorkspaceMember } from '@/workspace-member/types/WorkspaceMember';
 import { t } from '@lingui/core/macro';
 import { useRecoilValue } from 'recoil';
-import { IconDotsVertical, IconSpy, IconTrash } from 'twenty-ui/display';
+import { IconDotsVertical, IconSpy, IconSwitchHorizontal, IconTrash } from 'twenty-ui/display';
 import { LightIconButton } from 'twenty-ui/input';
 import { MenuItem } from 'twenty-ui/navigation';
 import { PermissionFlagType } from '~/generated/graphql';
@@ -17,6 +17,7 @@ type ManageMembersDropdownMenuProps = {
   workspaceMember: WorkspaceMember;
   onDelete: (workspaceMemberId: string) => void;
   onImpersonate: (workspaceMember: WorkspaceMember) => void;
+  onReplace?: (workspaceMember: WorkspaceMember) => void;
 };
 
 export const ManageMembersDropdownMenu = ({
@@ -24,6 +25,7 @@ export const ManageMembersDropdownMenu = ({
   workspaceMember,
   onDelete,
   onImpersonate,
+  onReplace,
 }: ManageMembersDropdownMenuProps) => {
   const { closeDropdown } = useCloseDropdown();
   const isImpersonating = useRecoilValue(isImpersonatingState);
@@ -46,6 +48,16 @@ export const ManageMembersDropdownMenu = ({
                 text={t`Impersonate`}
                 onClick={() => {
                   onImpersonate(workspaceMember);
+                  closeDropdown(dropdownId);
+                }}
+              />
+            )}
+            {onReplace && (
+              <MenuItem
+                LeftIcon={IconSwitchHorizontal}
+                text={t`Substituir`}
+                onClick={() => {
+                  onReplace(workspaceMember);
                   closeDropdown(dropdownId);
                 }}
               />

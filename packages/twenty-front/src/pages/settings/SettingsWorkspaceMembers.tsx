@@ -24,6 +24,7 @@ import { TableHeader } from '@/ui/layout/table/components/TableHeader';
 import { type WorkspaceMember } from '@/workspace-member/types/WorkspaceMember';
 import { WorkspaceInviteLink } from '@/workspace/components/WorkspaceInviteLink';
 import { WorkspaceInviteTeam } from '@/workspace/components/WorkspaceInviteTeam';
+import { ReplaceUserModal } from '@/workspace/components/ReplaceUserModal';
 import { type ApolloError } from '@apollo/client';
 import { formatDistanceToNow } from 'date-fns';
 import { SettingsPath } from 'twenty-shared/types';
@@ -39,6 +40,7 @@ import {
   IconMail,
   IconReload,
   IconSearch,
+  IconSwitchHorizontal,
   IconTrash,
   Status,
   TooltipDelay,
@@ -56,10 +58,15 @@ import { TableCell } from '../../modules/ui/layout/table/components/TableCell';
 import { TableRow } from '../../modules/ui/layout/table/components/TableRow';
 import { useDeleteWorkspaceInvitation } from '../../modules/workspace-invitation/hooks/useDeleteWorkspaceInvitation';
 import { useResendWorkspaceInvitation } from '../../modules/workspace-invitation/hooks/useResendWorkspaceInvitation';
+import { useCreateWorkspaceInvitation } from '../../modules/workspace-invitation/hooks/useCreateWorkspaceInvitation';
 import { workspaceInvitationsState } from '../../modules/workspace-invitation/states/workspaceInvitationsStates';
+import { sanitizeEmailList } from '@/workspace/utils/sanitizeEmailList';
 
 export const WORKSPACE_MEMBER_DELETION_MODAL_ID =
   'workspace-member-deletion-modal';
+
+const REPLACE_INVITE_MODAL_ID = 'replace-invite-modal';
+const REPLACE_MEMBER_MODAL_ID = 'replace-member-modal';
 
 const StyledButtonContainer = styled.div`
   align-items: center;
@@ -150,7 +157,13 @@ export const SettingsWorkspaceMembers = () => {
 
   const { resendInvitation } = useResendWorkspaceInvitation();
   const { deleteWorkspaceInvitation } = useDeleteWorkspaceInvitation();
+  const { sendInvitation } = useCreateWorkspaceInvitation();
   const [deleteUserFromWorkspace] = useDeleteUserWorkspaceMutation();
+  const { openModal } = useModal();
+  const { enqueueSuccessSnackBar } = useSnackBar();
+
+  const [inviteToReplace, setInviteToReplace] = useState<string | null>(null);
+  const [memberToReplace, setMemberToReplace] = useState<{ id: string; email: string } | null>(null);
 
   const currentWorkspace = useRecoilValue(currentWorkspaceState);
   const currentWorkspaceMember = useRecoilValue(currentWorkspaceMemberState);
@@ -223,6 +236,65 @@ export const SettingsWorkspaceMembers = () => {
     }
   };
 
+  const handleReplaceInvite = async (newEmail: string) => {
+    const invitation = workspaceInvitations.find((inv) => inv.id === inviteToReplace);
+    if (!invitation) return;
+
+    // Deletar invite antigo
+    await deleteWorkspaceInvitation({ appTokenId: invitation.id });
+    
+    // Criar novo invite sem pagar (substituição)
+    const emailsList = sanitizeEmailList([newEmail]);
+    const { data } = await sendInvitation({ emails: emailsList });
+    
+    if (isDefined(data) && data.sendInvitations.result.length > 0) {
+      enqueueSuccessSnackBar({
+        message: t`Convite substituído com sucesso`,
+        options: {
+          duration: 2000,
+        },
+      });
+    }
+    
+    setInviteToReplace(null);
+  };
+
+  const handleReplaceMember = async (newEmail: string) => {
+    if (!memberToReplace) return;
+
+    try {
+      // Remover membro atual
+      await deleteUserFromWorkspace?.({
+        variables: {
+          workspaceMemberIdToDelete: memberToReplace.id,
+        },
+      });
+
+      // Criar novo invite sem pagar (substituição)
+      const emailsList = sanitizeEmailList([newEmail]);
+      const { data } = await sendInvitation({ emails: emailsList });
+      
+      if (isDefined(data) && data.sendInvitations.result.length > 0) {
+        enqueueSuccessSnackBar({
+          message: t`Usuário substituído com sucesso. Convite enviado para ${newEmail}`,
+          options: {
+            duration: 3000,
+          },
+        });
+        refetchWorkspaceMembers();
+      }
+    } catch (error) {
+      enqueueErrorSnackBar({
+        message: t`Erro ao substituir usuário`,
+        options: {
+          duration: 3000,
+        },
+      });
+    }
+    
+    setMemberToReplace(null);
+  };
+
   const handleResendWorkspaceInvitation = async (appTokenId: string) => {
     const result = await resendInvitation({ appTokenId });
     if (isDefined(result.errors)) {
@@ -278,8 +350,6 @@ export const SettingsWorkspaceMembers = () => {
       );
     });
   }, [workspaceMembers, searchFilter]);
-
-  const { openModal } = useModal();
 
   return (
     <SubMenuTopBarContainer
@@ -360,6 +430,15 @@ export const SettingsWorkspaceMembers = () => {
                           variant="tertiary"
                           size="medium"
                           Icon={IconReload}
+                        />
+                        <IconButton
+                          onClick={() => {
+                            setInviteToReplace(workspaceInvitation.id);
+                            openModal(REPLACE_INVITE_MODAL_ID);
+                          }}
+                          variant="tertiary"
+                          size="medium"
+                          Icon={IconSwitchHorizontal}
                         />
                         <IconButton
                           onClick={() => {
@@ -454,6 +533,10 @@ export const SettingsWorkspaceMembers = () => {
                             dropdownId={`workspace-member-actions-${workspaceMember.id}`}
                             workspaceMember={workspaceMember}
                             onImpersonate={handleImpersonate}
+                            onReplace={(member) => {
+                              setMemberToReplace({ id: member.id, email: member.userEmail });
+                              openModal(REPLACE_MEMBER_MODAL_ID);
+                            }}
                             onDelete={(id) => {
                               setWorkspaceMemberToDelete(id);
                               openModal(WORKSPACE_MEMBER_DELETION_MODAL_ID);
@@ -503,6 +586,25 @@ export const SettingsWorkspaceMembers = () => {
         }
         confirmButtonText={t`Remove member`}
       />
+      {inviteToReplace && (
+        <ReplaceUserModal
+          modalId={REPLACE_INVITE_MODAL_ID}
+          currentEmail={
+            workspaceInvitations.find((inv) => inv.id === inviteToReplace)
+              ?.email || ''
+          }
+          onReplace={handleReplaceInvite}
+          onCancel={() => setInviteToReplace(null)}
+        />
+      )}
+      {memberToReplace && (
+        <ReplaceUserModal
+          modalId={REPLACE_MEMBER_MODAL_ID}
+          currentEmail={memberToReplace.email}
+          onReplace={handleReplaceMember}
+          onCancel={() => setMemberToReplace(null)}
+        />
+      )}
     </SubMenuTopBarContainer>
   );
 };
